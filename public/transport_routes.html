@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bus Routes</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:#f0f4f8; margin:0; }
+
+.sidebar { height:100vh; background:linear-gradient(180deg,#1e293b,#0f172a); color:white; padding:28px 20px; position:sticky; top:0; overflow-y:auto; }
+.sidebar h3 { color:#f59e0b; font-weight:700; margin-bottom:28px; font-size:18px; }
+.menu-item { padding:11px 14px; margin-bottom:6px; border-radius:10px; cursor:pointer; font-size:13.5px; transition:0.2s; }
+.menu-item:hover, .menu-item.active { background:#334155; }
+.menu-item a { color:white; text-decoration:none; display:block; }
+
+.main { padding:40px 45px; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; }
+.page-header h2 { font-weight:700; color:#1e293b; margin:0; font-size:24px; }
+
+/* FORM CARD */
+.form-card {
+  background:white; border-radius:18px; padding:36px 40px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.09); margin-bottom:32px;
+  border-top:4px solid #3b82f6;
+}
+.form-card h5 { font-weight:700; color:#1e293b; margin-bottom:10px; font-size:17px; }
+.section-label {
+  font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase;
+  letter-spacing:1px; margin:22px 0 16px; padding-bottom:6px; border-bottom:1px solid #f1f5f9;
+}
+.form-label { font-size:13px; font-weight:600; color:#475569; margin-bottom:6px; }
+.form-control, .form-select {
+  border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px;
+  padding:10px 14px; height:46px; background:#fafbfc; transition:0.2s;
+}
+.form-control:focus, .form-select:focus {
+  border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.12);
+  background:white; outline:none;
+}
+.form-control::placeholder { color:#b0bec5; font-size:13px; }
+
+.btn-blue {
+  background:linear-gradient(135deg,#3b82f6,#2563eb); border:none; color:white;
+  padding:12px 32px; border-radius:10px; font-size:14px; font-weight:600;
+  cursor:pointer; transition:0.2s;
+}
+.btn-blue:hover { opacity:0.88; transform:translateY(-1px); color:white; }
+.success-msg { font-size:13px; font-weight:600; color:#16a34a; }
+
+/* ROUTES SECTION TITLE */
+.routes-title { font-size:16px; font-weight:700; color:#1e293b; margin-bottom:18px; }
+
+/* ROUTE CARD */
+.route-card {
+  background:white; border-radius:18px; padding:28px 32px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08); margin-bottom:22px;
+  border-left:6px solid #3b82f6; transition:0.25s;
+}
+.route-card:hover { box-shadow:0 12px 32px rgba(0,0,0,0.13); transform:translateX(3px); }
+
+/* ROUTE HEADER ROW */
+.route-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.route-title { font-size:17px; font-weight:700; color:#1e293b; margin:0 0 6px; }
+.route-code { color:#3b82f6; font-size:13px; font-weight:600; margin-right:8px; }
+
+/* META PILLS */
+.meta-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:4px; }
+.meta-pill {
+  background:#f1f5f9; color:#475569; font-size:12px; font-weight:500;
+  padding:5px 12px; border-radius:20px; display:inline-flex; align-items:center; gap:5px;
+}
+.meta-pill.highlight { background:#dbeafe; color:#1d4ed8; font-weight:700; font-size:13px; }
+
+/* ACTION BUTTONS */
+.btn-add-stop {
+  background:#e0f2fe; color:#0369a1; border:none;
+  padding:7px 16px; border-radius:8px; font-size:12.5px; font-weight:600;
+  cursor:pointer; transition:0.2s;
+}
+.btn-add-stop:hover { background:#bae6fd; }
+.btn-del-route {
+  background:#fee2e2; color:#dc2626; border:none;
+  padding:7px 14px; border-radius:8px; font-size:12.5px; font-weight:600;
+  cursor:pointer; transition:0.2s;
+}
+.btn-del-route:hover { background:#fecaca; }
+
+/* STOPS SECTION */
+.stops-section { margin-top:18px; border-top:1.5px solid #f1f5f9; padding-top:16px; }
+.stops-header {
+  display:flex; align-items:center; gap:10px; margin-bottom:14px;
+}
+.stops-count-badge {
+  background:#3b82f6; color:white; font-size:12px; font-weight:700;
+  padding:3px 10px; border-radius:20px;
+}
+.stops-heading { font-size:13px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px; }
+
+/* STOP ITEMS */
+.stops-list { display:flex; flex-direction:column; gap:0; }
+.stop-row {
+  display:flex; align-items:center; gap:14px;
+  padding:11px 0; border-bottom:1px dashed #e9eef4;
+  transition:0.15s;
+}
+.stop-row:last-child { border-bottom:none; padding-bottom:0; }
+.stop-row:hover { background:#f8fafc; border-radius:8px; padding-left:8px; }
+
+.stop-number {
+  width:32px; height:32px; border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  color:white; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; flex-shrink:0;
+  box-shadow:0 2px 6px rgba(59,130,246,0.3);
+}
+.stop-connector {
+  width:2px; height:100%; background:#dbeafe;
+  position:absolute; left:15px; top:32px;
+}
+.stop-info { flex:1; }
+.stop-name-text { font-size:14px; font-weight:600; color:#1e293b; }
+.stop-time-text { font-size:12px; color:#94a3b8; margin-top:1px; }
+.btn-remove-stop {
+  background:transparent; border:1px solid #fca5a5; color:#ef4444;
+  padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600;
+  cursor:pointer; transition:0.2s; opacity:0.7; flex-shrink:0;
+}
+.btn-remove-stop:hover { background:#fee2e2; opacity:1; }
+
+.no-stops-msg {
+  background:#f8fafc; border:1.5px dashed #e2e8f0;
+  border-radius:10px; padding:14px 20px; color:#94a3b8;
+  font-size:13px; text-align:center;
+}
+
+/* MODAL */
+.modal-content { border-radius:16px; border:none; }
+.modal-header { background:#1e293b; color:white; border-radius:16px 16px 0 0; padding:20px 28px; }
+.modal-title { font-weight:600; font-size:16px; }
+.modal-body { padding:28px; }
+.modal-footer { padding:16px 28px; border-top:1px solid #f1f5f9; }
+
+.badge-active   { background:#dcfce7; color:#166534; padding:4px 12px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.badge-inactive { background:#f1f5f9; color:#64748b; padding:4px 12px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.back-btn { background:#64748b; border:none; color:white; padding:10px 22px; border-radius:10px; font-size:13px; font-weight:500; cursor:pointer; }
+.back-btn:hover { background:#475569; }
+
+.toast-box{position:fixed;bottom:28px;right:28px;z-index:9999;background:#1e293b;color:white;padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2);display:none;align-items:center;gap:10px;border-left:4px solid #22c55e}
+.toast-box.error{border-left-color:#ef4444}
+.toast-box.show{display:flex;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+
+<div class="col-md-2 sidebar">
+  <h3>🚌 Transport</h3>
+  <div class="menu-item"><a href="transport_inventory.html">📊 Dashboard</a></div>
+  <div class="menu-item"><a href="transport_buses.html">🚌 Buses</a></div>
+  <div class="menu-item active"><a href="transport_routes.html">🗺️ Routes</a></div>
+  <div class="menu-item"><a href="transport_stops.html">🛑 Bus Stops</a></div>
+  <div class="menu-item"><a href="transport_drivers.html">👨‍✈️ Drivers</a></div>
+  <div class="menu-item"><a href="transport_insurance.html">🛡️ Insurance</a></div>
+  <div class="menu-item"><a href="transport_rc.html">📋 RC Book</a></div>
+  <div class="menu-item"><a href="transport_maintenance.html">🔧 Maintenance</a></div>
+  <div class="menu-item" style="margin-top:12px;"><a href="head_dashboard.html" style="color:#94a3b8;font-size:12.5px;">← Main Dashboard</a></div>
+</div>
+
+<div class="col-md-10 main">
+  <div class="page-header">
+    <h2>🗺️ Routes & Stops</h2>
+    <button class="back-btn" onclick="window.location.href='transport_inventory.html'">← Back</button>
+  </div>
+
+  <!-- CREATE ROUTE FORM -->
+  <div class="form-card">
+    <h5>➕ Create New Route</h5>
+
+    <div class="section-label">Route Information</div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <label class="form-label">Route Name *</label>
+        <input type="text" id="route_name" class="form-control" placeholder="e.g. Route 1 — Poonamallee">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Route Code</label>
+        <input type="text" id="route_code" class="form-control" placeholder="RT-001">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Start Point</label>
+        <input type="text" id="start_point" class="form-control" placeholder="e.g. CIT College">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End Point</label>
+        <input type="text" id="end_point" class="form-control" placeholder="e.g. Poonamallee Bus Stop">
+      </div>
+    </div>
+    <div class="row g-4 mt-0">
+      <div class="col-md-2">
+        <label class="form-label">Distance (km)</label>
+        <input type="number" id="distance_km" class="form-control" placeholder="12">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Est. Time (min)</label>
+        <input type="number" id="estimated_time_min" class="form-control" placeholder="35">
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex align-items-center gap-3">
+      <button class="btn-blue" onclick="addRoute()">Create Route</button>
+      <span id="route_msg" class="success-msg"></span>
+    </div>
+  </div>
+
+  <!-- ROUTES LIST -->
+  <div class="routes-title">All Routes</div>
+  <div id="routesList">
+    <div class="text-center text-muted py-5">Loading routes...</div>
+  </div>
+
+  <!-- ADD STOP MODAL -->
+  <div class="modal fade" id="stopModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">🛑 Add Stop</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="modal_route_id">
+          <div class="mb-4">
+            <label class="form-label">Stop Name *</label>
+            <input type="text" id="stop_name" class="form-control" placeholder="e.g. Poonamallee Market">
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label">Stop Order (Sequence)</label>
+              <input type="number" id="stop_order" class="form-control" value="1" min="1">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Arrival Time</label>
+              <input type="time" id="arrival_time" class="form-control">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn-blue" onclick="addStop()">Add Stop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function showToast(msg,isError=false){const t=document.getElementById("toast");document.getElementById("toast_msg").innerText=msg;document.getElementById("toast_icon").innerText=isError?"❌":"✅";t.className="toast-box show"+(isError?" error":"");setTimeout(()=>t.className="toast-box",3500);}
+
+async function loadRoutes(){
+  const container = document.getElementById("routesList");
+  try{
+    const routes = await (await fetch("/api/transport/routes")).json();
+    if(!routes.length){
+      container.innerHTML = `<div class="text-center text-muted py-5" style="font-size:15px;">No routes created yet</div>`;
+      return;
+    }
+
+    // Fetch each route's full details (with stops) in parallel
+    const details = await Promise.all(
+      routes.map(r => fetch(`/api/transport/routes/${r.id}`).then(res=>res.json()).catch(()=>({route:r,stops:[]})))
+    );
+
+    container.innerHTML = details.map(d => {
+      const r = d.route;
+      const stops = d.stops || [];
+
+      // Build stops HTML
+      const stopsHtml = stops.length
+        ? stops.map(s => `
+            <div class="stop-row">
+              <div class="stop-number">${s.stop_order}</div>
+              <div class="stop-info">
+                <div class="stop-name-text">${s.stop_name}</div>
+                ${s.arrival_time ? `<div class="stop-time-text">🕐 ${s.arrival_time}</div>` : ''}
+              </div>
+              <button class="btn-remove-stop" onclick="deleteStop(${s.id},${r.id})">Remove</button>
+            </div>`)
+          .join('')
+        : `<div class="no-stops-msg">No stops added yet — click "+ Add Stop" to add boarding points</div>`;
+
+      return `
+        <div class="route-card">
+
+          <!-- ROUTE HEADER -->
+          <div class="route-header">
+            <div>
+              <div class="route-title">
+                ${r.route_code ? `<span class="route-code">${r.route_code}</span>` : ''}${r.route_name}
+              </div>
+              <div class="meta-row">
+                <span class="meta-pill">🚦 ${r.start_point||'—'} → ${r.end_point||'—'}</span>
+                ${r.distance_km       ? `<span class="meta-pill">📏 ${r.distance_km} km</span>` : ''}
+                ${r.estimated_time_min? `<span class="meta-pill">⏱️ ${r.estimated_time_min} min</span>` : ''}
+                <span class="meta-pill highlight">🛑 ${stops.length} Stop${stops.length!==1?'s':''}</span>
+                <span class="${r.status==='active'?'badge-active':'badge-inactive'}">${r.status}</span>
+              </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-shrink-0">
+              <button class="btn-add-stop" onclick="openStopModal(${r.id})">+ Add Stop</button>
+              <button class="btn-del-route" onclick="deleteRoute(${r.id})">Delete Route</button>
+            </div>
+          </div>
+
+          <!-- STOPS SECTION -->
+          <div class="stops-section">
+            <div class="stops-header">
+              <span class="stops-heading">Boarding Stops</span>
+              <span class="stops-count-badge">${stops.length}</span>
+            </div>
+            <div class="stops-list">
+              ${stopsHtml}
+            </div>
+          </div>
+
+        </div>`;
+    }).join('');
+
+  }catch(e){
+    container.innerHTML = `<div class="text-center text-danger py-4">Could not load routes — check server connection</div>`;
+  }
+}
+
+function openStopModal(routeId){
+  document.getElementById("modal_route_id").value = routeId;
+  document.getElementById("stop_name").value = "";
+  document.getElementById("arrival_time").value = "";
+  new bootstrap.Modal(document.getElementById("stopModal")).show();
+}
+
+async function addStop(){
+  const routeId = document.getElementById("modal_route_id").value;
+  const body = {
+    stop_name:    document.getElementById("stop_name").value.trim(),
+    stop_order:   document.getElementById("stop_order").value,
+    arrival_time: document.getElementById("arrival_time").value,
+  };
+  if(!body.stop_name){ alert("Enter a stop name"); return; }
+  await fetch(`/api/transport/routes/${routeId}/stops`,{
+    method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)
+  });
+  bootstrap.Modal.getInstance(document.getElementById("stopModal")).hide();
+  loadRoutes();
+}
+
+async function deleteStop(stopId, routeId){
+  if(!confirm("Remove this stop?")) return;
+  await fetch(`/api/transport/stops/${stopId}`,{method:"DELETE"});
+  loadRoutes();
+}
+
+async function addRoute(){
+  const body = {
+    route_name:          document.getElementById("route_name").value.trim(),
+    route_code:          document.getElementById("route_code").value.trim(),
+    start_point:         document.getElementById("start_point").value.trim(),
+    end_point:           document.getElementById("end_point").value.trim(),
+    distance_km:         document.getElementById("distance_km").value,
+    estimated_time_min:  document.getElementById("estimated_time_min").value,
+  };
+  if(!body.route_name){ alert("Enter a route name"); return; }
+  try{
+    const data = await (await fetch("/api/transport/routes",{
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)
+    })).json();
+    const msg = document.getElementById("route_msg");
+    msg.innerText = data.message || "Route created!";
+    setTimeout(()=>msg.innerText="",3000);
+    // Clear form
+    ["route_name","route_code","start_point","end_point","distance_km","estimated_time_min"].forEach(id=>{
+      document.getElementById(id).value="";
+    });
+    loadRoutes();
+  }catch(e){ alert("Error creating route"); }
+}
+
+async function deleteRoute(id){
+  if(!confirm("Delete this route and all its stops?")) return;
+  await fetch(`/api/transport/routes/${id}`,{method:"DELETE"});
+  loadRoutes();
+}
+
+window.onload = loadRoutes;
+</script>
+<div class="toast-box" id="toast"><span id="toast_icon">✅</span><span id="toast_msg"></span></div>
+</body>
+</html>

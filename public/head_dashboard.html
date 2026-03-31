@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Head Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+transition:0.3s;
+}
+
+/* LIGHT MODE */
+
+.light{
+background:#f8fafc;
+color:#111;
+}
+
+.light .sidebar{
+background:#1e293b;
+color:white;
+}
+
+.light .card-system{
+background:white;
+color:#111;
+}
+
+/* DARK MODE */
+
+.dark{
+background:#0f172a;
+color:white;
+}
+
+.dark .sidebar{
+background:#020617;
+}
+
+.dark .card-system{
+background:#1e293b;
+color:white;
+}
+
+/* Sidebar */
+
+.sidebar{
+height:100vh;
+padding:25px;
+}
+
+.sidebar h3{
+color:#38bdf8;
+font-weight:600;
+}
+
+.menu-item{
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* Dashboard */
+
+.dashboard{
+padding:40px;
+}
+
+/* Cards */
+
+.card-system{
+padding:30px;
+border-radius:14px;
+box-shadow:0px 8px 18px rgba(0,0,0,0.1);
+cursor:pointer;
+transition:0.3s;
+}
+
+.card-system:hover{
+transform:translateY(-6px);
+}
+
+/* Punchy Colors */
+
+.lab{
+background:linear-gradient(135deg,#6366f1,#4f46e5);
+color:white;
+}
+
+.transport{
+background:linear-gradient(135deg,#f59e0b,#d97706);
+color:white;
+}
+
+.it{
+background:linear-gradient(135deg,#10b981,#059669);
+color:white;
+}
+
+.construction{
+background:linear-gradient(135deg,#ef4444,#dc2626);
+color:white;
+}
+
+/* Toggle Button */
+
+.toggle-btn{
+position:absolute;
+right:30px;
+top:20px;
+}
+
+.logout{
+margin-top:30px;
+background:#ef4444;
+color:white;
+text-align:center;
+}
+
+.logout:hover{
+background:#dc2626;
+}
+
+.notification-card{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+cursor:pointer;
+transition:0.2s;
+}
+
+.notification-card:hover{
+transform:scale(1.02);
+}
+
+.dark .notification-card{
+background:#1e293b;
+color:white;
+}
+
+.notification-item{
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.notif-badge{
+background:red;
+color:white;
+font-size:12px;
+padding:3px 8px;
+border-radius:20px;
+font-weight:600;
+display:none;
+}
+
+</style>
+
+</head>
+
+<body class="light">
+
+<div class="container-fluid">
+
+<!--<button class="btn btn-dark toggle-btn" onclick="toggleMode()">🌙 Dark Mode</button>-->
+
+<div class="row">
+
+<!-- Sidebar -->
+
+<div class="col-md-2 sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item">Dashboard</div>
+<div class="menu-item">Labs</div>
+<div class="menu-item">Incharges</div>
+<div class="menu-item">Reports</div>
+<div class="menu-item" onclick="openNotifications()">
+
+🔔 Notifications 
+<span id="notif_count" class="notif-badge">
+0
+</span>
+
+</div><div class="menu-item logout" onclick="logout()">
+Logout
+</div>
+
+</div>
+
+
+<!-- Main Dashboard -->
+
+<div class="col-md-10 dashboard">
+
+<h2>Chennai Institute of Technology Campus Inventory System</h2>
+
+<div id="notifications_panel" style="display:none; margin-top:20px;">
+
+<h4>Notifications</h4>
+
+<div id="notifications_list"></div>
+
+</div>
+
+<div class="row mt-4 g-4">
+
+<div class="col-md-3">
+
+<div class="card-system lab text-center" onclick="openLabInventory()">
+
+<h4>Lab Inventory</h4>
+<p>Manage lab assets</p>
+
+</div>
+
+</div>
+
+
+<div class="col-md-3">
+
+<div class="card-system transport text-center" onclick="window.location.href='transport_inventory.html'" style="cursor:pointer;">
+
+<h4>Transport</h4>
+<p>Vehicle assets</p>
+
+</div>
+
+</div>
+
+
+<div class="col-md-3">
+
+<div class="card-system it text-center" onclick="window.location.href='it_dashboard.html'" style="cursor:pointer;">
+
+<h4>IT Assets</h4>
+<p>Computers & devices</p>
+
+</div>
+
+</div>
+
+
+<div class="col-md-3">
+
+<div class="card-system construction text-center" onclick="window.location.href='construction_dashboard.html'" style="cursor:pointer;">
+
+<h4>Construction</h4>
+<p>Material inventory</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/head.js"></script>
+
+
+</body>
+
+</html>

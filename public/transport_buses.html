@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bus Facilities</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:#f0f4f8; margin:0; }
+.sidebar { height:100vh; background:linear-gradient(180deg,#1e293b,#0f172a); color:white; padding:28px 20px; position:sticky; top:0; overflow-y:auto; }
+.sidebar h3 { color:#f59e0b; font-weight:700; margin-bottom:28px; font-size:18px; }
+.menu-item { padding:11px 14px; margin-bottom:6px; border-radius:10px; cursor:pointer; font-size:13.5px; transition:0.2s; }
+.menu-item:hover, .menu-item.active { background:#334155; }
+.menu-item a { color:white; text-decoration:none; display:block; }
+.main { padding:40px 45px; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; }
+.page-header h2 { font-weight:700; color:#1e293b; margin:0; font-size:24px; }
+.form-card { background:white; border-radius:18px; padding:36px 40px; box-shadow:0 8px 28px rgba(0,0,0,0.09); margin-bottom:32px; border-top:4px solid #f59e0b; }
+.form-card h5 { font-weight:700; color:#1e293b; margin-bottom:4px; font-size:17px; }
+.form-card .subtitle { color:#94a3b8; font-size:13px; margin-bottom:20px; }
+.section-label { font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin:24px 0 16px; padding-bottom:6px; border-bottom:1px solid #f1f5f9; }
+.form-label { font-size:13px; font-weight:600; color:#475569; margin-bottom:6px; }
+.form-control, .form-select { border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; padding:10px 14px; height:46px; background:#fafbfc; transition:0.2s; font-family:'Poppins',sans-serif; }
+.form-control:focus, .form-select:focus { border-color:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,0.12); background:white; outline:none; }
+.form-control::placeholder { color:#b0bec5; font-size:13px; }
+.btn-amber { background:linear-gradient(135deg,#f59e0b,#d97706); border:none; color:white; padding:12px 32px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; transition:0.2s; font-family:'Poppins',sans-serif; }
+.btn-amber:hover { opacity:0.88; transform:translateY(-1px); }
+.btn-clear { background:#f1f5f9; border:none; color:#64748b; padding:12px 22px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Poppins',sans-serif; }
+.btn-clear:hover { background:#e2e8f0; }
+.table-card { background:white; border-radius:18px; overflow:hidden; box-shadow:0 8px 28px rgba(0,0,0,0.09); }
+.table-header { padding:20px 28px; background:linear-gradient(135deg,#1e293b,#0f172a); color:white; display:flex; justify-content:space-between; align-items:center; }
+.table-header h5 { margin:0; font-size:16px; font-weight:600; }
+.count-badge { background:rgba(255,255,255,0.15); padding:4px 14px; border-radius:20px; font-size:12px; }
+.table thead th { background:#f8fafc; color:#64748b; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; padding:14px 18px; border:none; }
+.table tbody td { padding:15px 18px; font-size:13.5px; vertical-align:middle; border-color:#f8fafc; color:#334155; }
+.table tbody tr:hover { background:#fffbeb; }
+.badge-active     { background:#dcfce7; color:#166534; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.badge-inactive   { background:#f1f5f9; color:#64748b; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.badge-maintenance{ background:#fef3c7; color:#92400e; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.badge-retired    { background:#fee2e2; color:#991b1b; padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.btn-view { border:1.5px solid #3b82f6; color:#3b82f6; background:transparent; padding:5px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; }
+.btn-view:hover { background:#3b82f6; color:white; }
+.btn-del  { border:1.5px solid #ef4444; color:#ef4444; background:transparent; padding:5px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; }
+.btn-del:hover  { background:#ef4444; color:white; }
+.back-btn { background:#64748b; border:none; color:white; padding:10px 22px; border-radius:10px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Poppins',sans-serif; }
+.back-btn:hover { background:#475569; }
+.empty-state { padding:60px 20px; text-align:center; color:#94a3b8; }
+.empty-state .icon { font-size:48px; margin-bottom:12px; }
+.empty-state p { font-size:14px; }
+.toast-box { position:fixed; bottom:28px; right:28px; z-index:9999; background:#1e293b; color:white; padding:14px 22px; border-radius:12px; font-size:14px; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,0.2); display:none; align-items:center; gap:10px; border-left:4px solid #22c55e; }
+.toast-box.error { border-left-color:#ef4444; }
+.toast-box.show { display:flex; animation:slideUp 0.3s ease; }
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+</style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+
+<div class="col-md-2 sidebar">
+  <h3>🚌 Transport</h3>
+  <div class="menu-item"><a href="transport_inventory.html">📊 Dashboard</a></div>
+  <div class="menu-item active"><a href="transport_buses.html">🚌 Buses</a></div>
+  <div class="menu-item"><a href="transport_routes.html">🗺️ Routes</a></div>
+  <div class="menu-item"><a href="transport_stops.html">🛑 Bus Stops</a></div>
+  <div class="menu-item"><a href="transport_drivers.html">👨‍✈️ Drivers</a></div>
+  <div class="menu-item"><a href="transport_insurance.html">🛡️ Insurance</a></div>
+  <div class="menu-item"><a href="transport_rc.html">📋 RC Book</a></div>
+  <div class="menu-item"><a href="transport_maintenance.html">🔧 Maintenance</a></div>
+  <div class="menu-item" style="margin-top:12px;"><a href="head_dashboard.html" style="color:#94a3b8;font-size:12.5px;">← Main Dashboard</a></div>
+</div>
+
+<div class="col-md-10 main">
+  <div class="page-header">
+    <h2>🚌 Bus Facilities</h2>
+    <button class="back-btn" onclick="window.location.href='transport_inventory.html'">← Back</button>
+  </div>
+
+  <div class="form-card">
+    <h5>➕ Add New Bus</h5>
+    <p class="subtitle">Register a new bus to the fleet.</p>
+
+    <div class="section-label">Basic Information</div>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Bus Number *</label>
+        <input type="text" id="bus_number" class="form-control" placeholder="e.g. BUS-001">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Registration Number *</label>
+        <input type="text" id="registration_number" class="form-control" placeholder="e.g. TN12AB1234">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Vehicle Model</label>
+        <input type="text" id="vehicle_model" class="form-control" placeholder="e.g. Tata LP 909">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Manufacturer</label>
+        <input type="text" id="manufacturer" class="form-control" placeholder="e.g. Tata Motors">
+      </div>
+    </div>
+
+    <div class="section-label">Vehicle Details</div>
+    <div class="row g-3">
+      <div class="col-md-2">
+        <label class="form-label">Year</label>
+        <input type="number" id="year_of_manufacture" class="form-control" placeholder="2020" min="1990" max="2030">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Seating Capacity</label>
+        <input type="number" id="seating_capacity" class="form-control" placeholder="52">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Fuel Type</label>
+        <select id="fuel_type" class="form-select">
+          <option value="diesel">Diesel</option>
+          <option value="petrol">Petrol</option>
+          <option value="cng">CNG</option>
+          <option value="electric">Electric</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Color</label>
+        <input type="text" id="color" class="form-control" placeholder="e.g. White">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select id="bus_status" class="form-select">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="under_maintenance">Under Maintenance</option>
+          <option value="retired">Retired</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-3">
+      <button class="btn-amber" onclick="addBus()">🚌 Add Bus</button>
+      <button class="btn-clear" onclick="clearForm()">Clear</button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <h5>All Buses</h5>
+      <span class="count-badge" id="busCount">—</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th><th>Bus No.</th><th>RC Number</th><th>Model</th>
+            <th>Year</th><th>Capacity</th><th>Fuel</th><th>Driver</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="busTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="toast-box" id="toast">
+  <span id="toast_icon">✅</span>
+  <span id="toast_msg"></span>
+</div>
+
+<script>
+function statusBadge(s){
+  const map   = {active:'badge-active',inactive:'badge-inactive',under_maintenance:'badge-maintenance',retired:'badge-retired'};
+  const label = {active:'Active',inactive:'Inactive',under_maintenance:'Maintenance',retired:'Retired'};
+  return `<span class="${map[s]||'badge-inactive'}">${label[s]||s}</span>`;
+}
+function showToast(msg,isError=false){
+  const t=document.getElementById('toast');
+  document.getElementById('toast_msg').innerText=msg;
+  document.getElementById('toast_icon').innerText=isError?'❌':'✅';
+  t.className='toast-box show'+(isError?' error':'');
+  setTimeout(()=>t.className='toast-box',3500);
+}
+async function loadBuses(){
+  try{
+    const buses=await(await fetch("/api/transport/buses")).json();
+    const tbody=document.getElementById("busTable");
+    document.getElementById("busCount").innerText=buses.length+" bus"+(buses.length!==1?"es":"");
+    if(!buses.length){
+      tbody.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="icon">🚌</div><p>No buses added yet.<br>Use the form above to add your first bus.</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML=buses.map((b,i)=>`
+      <tr>
+        <td><strong style="color:#94a3b8">${i+1}</strong></td>
+        <td><strong style="color:#f59e0b">${b.bus_number}</strong></td>
+        <td style="font-family:monospace;font-size:12.5px">${b.registration_number}</td>
+        <td>${b.vehicle_model||'<span style="color:#cbd5e1">—</span>'}</td>
+        <td>${b.year_of_manufacture||'<span style="color:#cbd5e1">—</span>'}</td>
+        <td>${b.seating_capacity?b.seating_capacity+' seats':'<span style="color:#cbd5e1">—</span>'}</td>
+        <td style="text-transform:capitalize">${b.fuel_type||'—'}</td>
+        <td>${b.driver_name||'<span style="color:#cbd5e1;font-size:12px">Not assigned</span>'}</td>
+        <td>${statusBadge(b.status)}</td>
+        <td>
+          <button class="btn-view me-2" onclick="viewBus(${b.id})">View</button>
+          <button class="btn-del" onclick="deleteBus(${b.id},'${b.bus_number}')">Delete</button>
+        </td>
+      </tr>`).join("");
+  }catch(e){
+    document.getElementById("busTable").innerHTML=`<tr><td colspan="10" class="text-center py-4 text-danger">⚠️ Could not load buses — check server</td></tr>`;
+  }
+}
+async function addBus(){
+  const busNum=document.getElementById("bus_number").value.trim();
+  const regNum=document.getElementById("registration_number").value.trim();
+  if(!busNum||!regNum){showToast("Bus number and registration number are required",true);return;}
+  const body={
+    bus_number:busNum, registration_number:regNum,
+    vehicle_model:document.getElementById("vehicle_model").value.trim(),
+    manufacturer:document.getElementById("manufacturer").value.trim(),
+    year_of_manufacture:document.getElementById("year_of_manufacture").value||null,
+    seating_capacity:document.getElementById("seating_capacity").value||0,
+    fuel_type:document.getElementById("fuel_type").value,
+    color:document.getElementById("color").value.trim(),
+    status:document.getElementById("bus_status").value
+  };
+  try{
+    const res=await fetch("/api/transport/buses",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const data=await res.json();
+    if(!res.ok){showToast(data.message||"Error adding bus",true);return;}
+    showToast("Bus "+busNum+" added successfully!");
+    clearForm();
+    loadBuses();
+  }catch(e){showToast("Server error — could not add bus",true);}
+}
+function clearForm(){
+  ["bus_number","registration_number","vehicle_model","manufacturer","year_of_manufacture","seating_capacity","color"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("fuel_type").value="diesel";
+  document.getElementById("bus_status").value="active";
+}
+async function deleteBus(id,name){
+  if(!confirm(`Delete bus "${name}"?`))return;
+  await fetch(`/api/transport/buses/${id}`,{method:"DELETE"});
+  showToast(`Bus "${name}" deleted.`);
+  loadBuses();
+}
+function viewBus(id){window.location.href=`transport_bus_details.html?id=${id}`;}
+window.onload=loadBuses;
+</script>
+</body>
+</html>

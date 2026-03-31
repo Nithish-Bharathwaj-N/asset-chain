@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>IT Assets — AssetChain</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Poppins', sans-serif; background: #f1f5f9; }
+.sidebar { width: 240px; background: #1e293b; color: white; padding: 25px 20px; position: fixed; height: 100%; overflow-y: auto; }
+.sidebar h3 { color: #38bdf8; font-weight: 600; margin-bottom: 30px; }
+.menu-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.menu-item:hover, .menu-item.active { background: #334155; }
+.main { margin-left: 260px; padding: 30px; }
+.stat-card { border-radius: 14px; padding: 24px; color: white; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.stat-card h2 { font-size: 2.2rem; font-weight: 700; margin: 0; }
+.stat-card p { margin: 0; opacity: 0.9; font-size: 0.9rem; }
+.bg-blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.bg-green  { background: linear-gradient(135deg, #10b981, #059669); }
+.bg-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.bg-red    { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.bg-purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+.logout { background: #ef4444; text-align: center; }
+.logout:hover { background: #dc2626; }
+table th { background: #1e293b; color: white; }
+.badge-available { background: #10b981; }
+.badge-assigned  { background: #3b82f6; }
+.badge-repair    { background: #f59e0b; }
+.badge-disposed  { background: #6b7280; }
+.nav-pills .nav-link.active { background: #1e293b; }
+</style>
+</head>
+<body>
+
+<div class="d-flex">
+<!-- Sidebar -->
+<div class="sidebar">
+  <h3>AssetChain</h3>
+  <div class="menu-item" onclick="window.location.href='head_dashboard.html'">🏠 Dashboard</div>
+  <div class="menu-item" onclick="window.location.href='transport_inventory.html'">🚌 Transport</div>
+  <div class="menu-item active">💻 IT Assets</div>
+  <div class="menu-item" onclick="window.location.href='construction_dashboard.html'">🏗️ Construction</div>
+  <div class="menu-item" onclick="window.location.href='view_labs.html'">🔬 Labs</div>
+  <div class="menu-item logout mt-4" onclick="logout()">Logout</div>
+</div>
+
+<!-- Main Content -->
+<div class="main w-100">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark">IT Asset Management</h2>
+    <button class="btn btn-dark" onclick="openAddAsset()">+ Add Asset</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4" id="stats_row">
+    <div class="col-md-2"><div class="stat-card bg-blue"><h2 id="s_total">—</h2><p>Total Assets</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-green"><h2 id="s_avail">—</h2><p>Available</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-blue" style="background:linear-gradient(135deg,#3b82f6,#2563eb)"><h2 id="s_assign">—</h2><p>Assigned</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-orange"><h2 id="s_repair">—</h2><p>Under Repair</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-red"><h2 id="s_warranty">—</h2><p>Warranty Expired</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-purple" onclick="window.location.href='it_software.html'" style="cursor:pointer"><h2>SW</h2><p>Software Licenses</p></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-pills mb-3" id="tabs">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="showTab('assets')">Assets</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('maintenance')">Maintenance Log</a></li>
+  </ul>
+
+  <!-- Assets Table -->
+  <div id="tab_assets">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex gap-2 mb-3">
+          <input type="text" class="form-control w-25" placeholder="Search by name, tag, department…" id="search_input" oninput="filterAssets()">
+          <select class="form-select w-auto" id="filter_status" onchange="filterAssets()">
+            <option value="">All Status</option>
+            <option value="available">Available</option>
+            <option value="assigned">Assigned</option>
+            <option value="under_repair">Under Repair</option>
+            <option value="disposed">Disposed</option>
+          </select>
+          <select class="form-select w-auto" id="filter_cat" onchange="filterAssets()">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead><tr>
+              <th>Asset Tag</th><th>Name</th><th>Category</th><th>Department</th>
+              <th>Assigned To</th><th>Status</th><th>Warranty</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="assets_tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Maintenance Table -->
+  <div id="tab_maintenance" style="display:none">
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn btn-warning" onclick="openAddMaintenance()">+ Add Maintenance</button>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead><tr>
+              <th>Asset</th><th>Type</th><th>Description</th><th>Cost</th><th>Date</th><th>Status</th>
+            </tr></thead>
+            <tbody id="maintenance_tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ADD ASSET MODAL -->
+<div class="modal fade" id="addAssetModal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title">Add IT Asset</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-4"><label>Asset Tag *</label><input id="a_tag" class="form-control" placeholder="IT-001"></div>
+      <div class="col-md-4"><label>Asset Name *</label><input id="a_name" class="form-control" placeholder="Dell Inspiron 15"></div>
+      <div class="col-md-4"><label>Category</label><select id="a_cat" class="form-select"></select></div>
+      <div class="col-md-4"><label>Brand</label><input id="a_brand" class="form-control"></div>
+      <div class="col-md-4"><label>Model</label><input id="a_model" class="form-control"></div>
+      <div class="col-md-4"><label>Serial Number</label><input id="a_serial" class="form-control"></div>
+      <div class="col-md-4"><label>Processor</label><input id="a_proc" class="form-control" placeholder="Intel i5-12th Gen"></div>
+      <div class="col-md-2"><label>RAM (GB)</label><input id="a_ram" class="form-control" type="number"></div>
+      <div class="col-md-2"><label>Storage (GB)</label><input id="a_storage" class="form-control" type="number"></div>
+      <div class="col-md-4"><label>OS</label><input id="a_os" class="form-control" placeholder="Windows 11"></div>
+      <div class="col-md-4"><label>IP Address</label><input id="a_ip" class="form-control"></div>
+      <div class="col-md-4"><label>MAC Address</label><input id="a_mac" class="form-control"></div>
+      <div class="col-md-4"><label>Location</label><input id="a_loc" class="form-control" placeholder="Lab 3 / Room 201"></div>
+      <div class="col-md-4"><label>Department</label><input id="a_dept" class="form-control"></div>
+      <div class="col-md-4"><label>Assigned To</label><input id="a_assigned" class="form-control"></div>
+      <div class="col-md-4"><label>Purchase Date</label><input id="a_pdate" class="form-control" type="date"></div>
+      <div class="col-md-4"><label>Purchase Cost (₹)</label><input id="a_cost" class="form-control" type="number"></div>
+      <div class="col-md-4"><label>Vendor</label><input id="a_vendor" class="form-control"></div>
+      <div class="col-md-4"><label>Warranty Expiry</label><input id="a_warranty" class="form-control" type="date"></div>
+      <div class="col-md-4"><label>Status</label>
+        <select id="a_status" class="form-select">
+          <option value="available">Available</option>
+          <option value="assigned">Assigned</option>
+          <option value="under_repair">Under Repair</option>
+        </select>
+      </div>
+      <div class="col-md-4"><label>Condition</label>
+        <select id="a_cond" class="form-select">
+          <option value="A">A — Excellent</option>
+          <option value="B">B — Good</option>
+          <option value="C">C — Fair</option>
+          <option value="D">D — Poor</option>
+        </select>
+      </div>
+      <div class="col-12"><label>Notes</label><textarea id="a_notes" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-dark" onclick="saveAsset()">Save Asset</button>
+  </div>
+</div></div></div>
+
+<!-- ADD MAINTENANCE MODAL -->
+<div class="modal fade" id="addMaintModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+  <div class="modal-header bg-warning">
+    <h5 class="modal-title">Add Maintenance Record</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-12"><label>Asset *</label><select id="m_asset" class="form-select"></select></div>
+      <div class="col-md-6"><label>Type</label>
+        <select id="m_type" class="form-select">
+          <option value="repair">Repair</option>
+          <option value="service">Service</option>
+          <option value="upgrade">Upgrade</option>
+          <option value="software_install">Software Install</option>
+          <option value="inspection">Inspection</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="col-md-6"><label>Date *</label><input id="m_date" class="form-control" type="date"></div>
+      <div class="col-12"><label>Description</label><textarea id="m_desc" class="form-control" rows="2"></textarea></div>
+      <div class="col-md-6"><label>Cost (₹)</label><input id="m_cost" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Technician</label><input id="m_tech" class="form-control"></div>
+      <div class="col-md-6"><label>Vendor</label><input id="m_vendor" class="form-control"></div>
+      <div class="col-md-6"><label>Next Due Date</label><input id="m_next" class="form-control" type="date"></div>
+      <div class="col-md-6"><label>Status</label>
+        <select id="m_status" class="form-select">
+          <option value="completed">Completed</option>
+          <option value="in_progress">In Progress</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-warning" onclick="saveMaintenance()">Save</button>
+  </div>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let allAssets = [];
+
+async function loadStats() {
+  const data = await fetch('/api/it/stats').then(r => r.json());
+  document.getElementById('s_total').textContent   = data.total;
+  document.getElementById('s_avail').textContent   = data.available;
+  document.getElementById('s_assign').textContent  = data.assigned;
+  document.getElementById('s_repair').textContent  = data.under_repair;
+  document.getElementById('s_warranty').textContent= data.warranty_expired;
+}
+
+async function loadCategories() {
+  const cats = await fetch('/api/it/categories').then(r => r.json());
+  const sel = document.getElementById('a_cat');
+  const filterSel = document.getElementById('filter_cat');
+  cats.forEach(c => {
+    sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    filterSel.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+  });
+}
+
+async function loadAssets() {
+  allAssets = await fetch('/api/it/assets').then(r => r.json());
+  renderAssets(allAssets);
+}
+
+function renderAssets(assets) {
+  const tbody = document.getElementById('assets_tbody');
+  tbody.innerHTML = '';
+  if (!assets.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No assets found</td></tr>';
+    return;
+  }
+  assets.forEach(a => {
+    const warrantyClass = a.warranty_expiry && new Date(a.warranty_expiry) < new Date() ? 'text-danger fw-bold' : '';
+    const warrantyText  = a.warranty_expiry ? new Date(a.warranty_expiry).toLocaleDateString('en-IN') : '—';
+    const statusColors  = { available: 'success', assigned: 'primary', under_repair: 'warning', disposed: 'secondary', lost: 'danger' };
+    tbody.innerHTML += `<tr>
+      <td><code>${a.asset_tag}</code></td>
+      <td>${a.asset_name}<br><small class="text-muted">${a.brand || ''} ${a.model || ''}</small></td>
+      <td>${a.category_name || '—'}</td>
+      <td>${a.department || '—'}</td>
+      <td>${a.assigned_to || '<span class="text-muted">—</span>'}</td>
+      <td><span class="badge bg-${statusColors[a.status] || 'secondary'}">${a.status}</span></td>
+      <td class="${warrantyClass}">${warrantyText}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-danger" onclick="deleteAsset(${a.id})">🗑</button>
+      </td>
+    </tr>`;
+  });
+}
+
+function filterAssets() {
+  const q       = document.getElementById('search_input').value.toLowerCase();
+  const status  = document.getElementById('filter_status').value;
+  const cat     = document.getElementById('filter_cat').value;
+  const filtered = allAssets.filter(a => {
+    const matchQ  = !q || [a.asset_tag, a.asset_name, a.department, a.assigned_to, a.brand, a.model]
+                          .some(v => v && v.toLowerCase().includes(q));
+    const matchS  = !status || a.status === status;
+    const matchC  = !cat    || a.category_name === cat;
+    return matchQ && matchS && matchC;
+  });
+  renderAssets(filtered);
+}
+
+async function loadMaintenance() {
+  const data = await fetch('/api/it/maintenance').then(r => r.json());
+  const tbody = document.getElementById('maintenance_tbody');
+  tbody.innerHTML = '';
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No records</td></tr>';
+    return;
+  }
+  const statusColors = { completed: 'success', in_progress: 'warning', pending: 'secondary' };
+  data.forEach(m => {
+    tbody.innerHTML += `<tr>
+      <td>${m.asset_name}<br><small class="text-muted">${m.asset_tag}</small></td>
+      <td>${m.maintenance_type}</td>
+      <td>${m.description || '—'}</td>
+      <td>${m.cost ? '₹' + Number(m.cost).toLocaleString('en-IN') : '—'}</td>
+      <td>${m.maintenance_date ? new Date(m.maintenance_date).toLocaleDateString('en-IN') : '—'}</td>
+      <td><span class="badge bg-${statusColors[m.status] || 'secondary'}">${m.status}</span></td>
+    </tr>`;
+  });
+}
+
+function showTab(tab) {
+  document.getElementById('tab_assets').style.display      = tab === 'assets'      ? '' : 'none';
+  document.getElementById('tab_maintenance').style.display = tab === 'maintenance' ? '' : 'none';
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  event.target.classList.add('active');
+  if (tab === 'maintenance') loadMaintenance();
+}
+
+function openAddAsset() {
+  new bootstrap.Modal(document.getElementById('addAssetModal')).show();
+}
+
+async function saveAsset() {
+  const body = {
+    asset_tag: document.getElementById('a_tag').value.trim(),
+    asset_name: document.getElementById('a_name').value.trim(),
+    category_id: document.getElementById('a_cat').value,
+    brand: document.getElementById('a_brand').value,
+    model: document.getElementById('a_model').value,
+    serial_number: document.getElementById('a_serial').value,
+    processor: document.getElementById('a_proc').value,
+    ram_gb: document.getElementById('a_ram').value,
+    storage_gb: document.getElementById('a_storage').value,
+    os: document.getElementById('a_os').value,
+    ip_address: document.getElementById('a_ip').value,
+    mac_address: document.getElementById('a_mac').value,
+    location: document.getElementById('a_loc').value,
+    department: document.getElementById('a_dept').value,
+    assigned_to: document.getElementById('a_assigned').value,
+    purchase_date: document.getElementById('a_pdate').value,
+    purchase_cost: document.getElementById('a_cost').value,
+    vendor_name: document.getElementById('a_vendor').value,
+    warranty_expiry: document.getElementById('a_warranty').value,
+    status: document.getElementById('a_status').value,
+    condition_grade: document.getElementById('a_cond').value,
+    notes: document.getElementById('a_notes').value
+  };
+
+  if (!body.asset_tag || !body.asset_name) return alert('Asset tag and name are required');
+
+  const res = await fetch('/api/it/assets', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (res.ok) {
+    bootstrap.Modal.getInstance(document.getElementById('addAssetModal')).hide();
+    loadStats(); loadAssets();
+    alert(data.message);
+  } else {
+    alert(data.message || 'Error saving asset');
+  }
+}
+
+async function deleteAsset(id) {
+  if (!confirm('Delete this asset?')) return;
+  await fetch('/api/it/assets/' + id, { method: 'DELETE' });
+  loadStats(); loadAssets();
+}
+
+async function openAddMaintenance() {
+  const assets = await fetch('/api/it/assets').then(r => r.json());
+  const sel = document.getElementById('m_asset');
+  sel.innerHTML = '<option value="">— Select Asset —</option>';
+  assets.forEach(a => sel.innerHTML += `<option value="${a.id}">${a.asset_tag} — ${a.asset_name}</option>`);
+  document.getElementById('m_date').value = new Date().toISOString().split('T')[0];
+  new bootstrap.Modal(document.getElementById('addMaintModal')).show();
+}
+
+async function saveMaintenance() {
+  const body = {
+    asset_id: document.getElementById('m_asset').value,
+    maintenance_type: document.getElementById('m_type').value,
+    description: document.getElementById('m_desc').value,
+    cost: document.getElementById('m_cost').value,
+    technician_name: document.getElementById('m_tech').value,
+    vendor_name: document.getElementById('m_vendor').value,
+    maintenance_date: document.getElementById('m_date').value,
+    next_due_date: document.getElementById('m_next').value,
+    status: document.getElementById('m_status').value
+  };
+  if (!body.asset_id || !body.maintenance_date) return alert('Asset and date are required');
+
+  const res = await fetch('/api/it/maintenance', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('addMaintModal')).hide();
+  loadMaintenance();
+  alert(data.message);
+}
+
+function logout() {
+  localStorage.clear(); sessionStorage.clear();
+  window.location.href = 'login.html';
+}
+
+loadStats(); loadCategories(); loadAssets();
+</script>
+</body>
+</html>

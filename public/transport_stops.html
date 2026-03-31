@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bus Stops</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:#f0f4f8; margin:0; }
+
+.sidebar { height:100vh; background:linear-gradient(180deg,#1e293b,#0f172a); color:white; padding:28px 20px; position:sticky; top:0; overflow-y:auto; }
+.sidebar h3 { color:#f59e0b; font-weight:700; margin-bottom:28px; font-size:18px; }
+.menu-item { padding:11px 14px; margin-bottom:6px; border-radius:10px; cursor:pointer; font-size:13.5px; transition:0.2s; }
+.menu-item:hover, .menu-item.active { background:#334155; }
+.menu-item a { color:white; text-decoration:none; display:block; }
+
+.main { padding:36px 42px; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+.page-header h2 { font-weight:700; color:#1e293b; margin:0; font-size:24px; }
+.back-btn { background:#64748b; border:none; color:white; padding:10px 22px; border-radius:10px; font-size:13px; font-weight:500; cursor:pointer; }
+.back-btn:hover { background:#475569; }
+
+/* ── ADD STOP FORM CARD ── */
+.add-card {
+  background:white; border-radius:18px;
+  padding:30px 36px; margin-bottom:30px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.09);
+  border-top:4px solid #3b82f6;
+}
+.add-card h5 { font-weight:700; color:#1e293b; font-size:17px; margin-bottom:20px; }
+
+.form-label { font-size:12.5px; font-weight:600; color:#475569; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.3px; }
+.form-control, .form-select {
+  border:1.5px solid #e2e8f0; border-radius:10px;
+  font-size:14px; padding:10px 14px; height:46px;
+  font-family:'Poppins',sans-serif; background:#fafbfc; transition:0.2s; outline:none;
+}
+.form-control:focus, .form-select:focus {
+  border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.12); background:white;
+}
+.form-control::placeholder { color:#c0ccd8; font-size:13px; }
+.form-control.error { border-color:#ef4444 !important; }
+
+.btn-add {
+  background:linear-gradient(135deg,#3b82f6,#2563eb); color:white; border:none;
+  padding:12px 32px; border-radius:10px; font-size:14px; font-weight:600;
+  cursor:pointer; transition:0.2s; height:46px;
+}
+.btn-add:hover { opacity:0.88; transform:translateY(-1px); }
+.success-msg { font-size:13px; font-weight:600; color:#16a34a; }
+.error-msg   { font-size:13px; font-weight:600; color:#ef4444; }
+
+/* ── ROUTE STOPS SECTION ── */
+.section-title {
+  font-size:16px; font-weight:700; color:#1e293b; margin-bottom:18px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-title .total-badge {
+  background:#1e293b; color:white; font-size:12px; font-weight:700;
+  padding:3px 12px; border-radius:20px;
+}
+
+/* ROUTE BLOCK */
+.route-block {
+  background:white; border-radius:16px; margin-bottom:22px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.08); overflow:hidden;
+}
+.route-block-header {
+  background:linear-gradient(135deg,#1e40af,#3b82f6);
+  padding:18px 26px; color:white;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.rh-left h5 { font-size:16px; font-weight:700; margin:0 0 4px; }
+.rh-left .rh-meta { display:flex; gap:14px; font-size:12.5px; opacity:0.88; flex-wrap:wrap; }
+.rh-code { background:rgba(255,255,255,0.22); font-size:11px; font-weight:700; padding:2px 10px; border-radius:20px; margin-bottom:6px; display:inline-block; }
+.stop-count-pill { background:rgba(255,255,255,0.22); color:white; font-size:12px; font-weight:700; padding:4px 14px; border-radius:20px; }
+
+/* STOPS LIST INSIDE BLOCK */
+.stops-inner { padding:20px 26px; }
+.timeline { position:relative; padding-left:20px; }
+.timeline::before {
+  content:''; position:absolute; left:16px; top:17px;
+  width:2px; height:calc(100% - 34px);
+  background:linear-gradient(to bottom,#3b82f6,#93c5fd 70%,transparent);
+}
+.tl-stop { display:flex; align-items:center; gap:16px; padding:0 0 22px; }
+.tl-stop:last-child { padding-bottom:0; }
+.tl-dot {
+  width:34px; height:34px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#3b82f6,#2563eb); color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; z-index:1; position:relative;
+  box-shadow:0 3px 10px rgba(59,130,246,0.3);
+}
+.tl-dot.first { background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 3px 10px rgba(16,185,129,0.3); }
+.tl-dot.last  { background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 3px 10px rgba(245,158,11,0.3); }
+.tl-body { flex:1; }
+.tl-name { font-size:14.5px; font-weight:600; color:#1e293b; }
+.tl-time { font-size:12px; color:#94a3b8; margin-top:2px; }
+.tl-tag { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; margin-top:3px; }
+.tl-tag.start { background:#dcfce7; color:#166534; }
+.tl-tag.end   { background:#fef3c7; color:#92400e; }
+.btn-remove {
+  background:transparent; border:1.5px solid #fca5a5; color:#ef4444;
+  padding:4px 12px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; transition:0.2s; flex-shrink:0;
+}
+.btn-remove:hover { background:#fee2e2; }
+
+.no-stops-msg {
+  text-align:center; padding:28px; color:#94a3b8;
+  background:#f8fafc; border-radius:10px; border:1.5px dashed #e2e8f0; font-size:13.5px;
+}
+
+.toast-box{position:fixed;bottom:28px;right:28px;z-index:9999;background:#1e293b;color:white;padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2);display:none;align-items:center;gap:10px;border-left:4px solid #22c55e}
+.toast-box.error{border-left-color:#ef4444}
+.toast-box.show{display:flex;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+
+<!-- SIDEBAR -->
+<div class="col-md-2 sidebar">
+  <h3>🚌 Transport</h3>
+  <div class="menu-item"><a href="transport_inventory.html">📊 Dashboard</a></div>
+  <div class="menu-item"><a href="transport_buses.html">🚌 Buses</a></div>
+  <div class="menu-item"><a href="transport_routes.html">🗺️ Routes</a></div>
+  <div class="menu-item active"><a href="transport_stops.html">🛑 Bus Stops</a></div>
+  <div class="menu-item"><a href="transport_drivers.html">👨‍✈️ Drivers</a></div>
+  <div class="menu-item"><a href="transport_insurance.html">🛡️ Insurance</a></div>
+  <div class="menu-item"><a href="transport_rc.html">📋 RC Book</a></div>
+  <div class="menu-item"><a href="transport_maintenance.html">🔧 Maintenance</a></div>
+  <div class="menu-item" style="margin-top:12px;"><a href="head_dashboard.html" style="color:#94a3b8;font-size:12.5px;">← Main Dashboard</a></div>
+</div>
+
+<!-- MAIN -->
+<div class="col-md-10 main">
+
+  <div class="page-header">
+    <h2>🛑 Bus Stops</h2>
+    <button class="back-btn" onclick="window.location.href='transport_routes.html'">← Routes</button>
+  </div>
+
+  <!-- ══ ADD STOP FORM ══ -->
+  <div class="add-card">
+    <h5>➕ Add New Bus Stop</h5>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Select Route *</label>
+        <select id="sel_route" class="form-select">
+          <option value="">— Select a route —</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Stop Name *</label>
+        <input type="text" id="inp_stop_name" class="form-control" placeholder="e.g. Avadi Bus Stand">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Stop Order</label>
+        <input type="number" id="inp_stop_order" class="form-control" value="1" min="1">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Arrival Time</label>
+        <input type="time" id="inp_arrival_time" class="form-control">
+      </div>
+      <div class="col-md-1 d-flex align-items-end">
+        <button class="btn-add w-100" onclick="addStop()">Add</button>
+      </div>
+    </div>
+    <div class="mt-3">
+      <span id="form_msg" class="success-msg"></span>
+    </div>
+  </div>
+
+  <!-- ══ ALL ROUTES + STOPS ══ -->
+  <div class="section-title">
+    All Routes & Stops
+    <span id="totalBadge" class="total-badge">0 routes</span>
+  </div>
+  <div id="routeBlocksContainer">
+    <div class="text-center text-muted py-5">Loading...</div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<script>
+function showToast(msg,isError=false){const t=document.getElementById("toast");document.getElementById("toast_msg").innerText=msg;document.getElementById("toast_icon").innerText=isError?"❌":"✅";t.className="toast-box show"+(isError?" error":"");setTimeout(()=>t.className="toast-box",3500);}
+
+let allData = []; // [{route, stops}]
+
+/* ══ INIT ══ */
+async function init(){
+  try{
+    const routes = await (await fetch("/api/transport/routes")).json();
+    const details = await Promise.all(
+      routes.map(r =>
+        fetch(`/api/transport/routes/${r.id}`)
+          .then(res => res.json())
+          .catch(() => ({ route:r, stops:[] }))
+      )
+    );
+    allData = details;
+    populateRouteDropdown(routes);
+    renderAllBlocks();
+  }catch(e){
+    document.getElementById("routeBlocksContainer").innerHTML =
+      `<div class="text-danger text-center py-4">Could not load data — check server</div>`;
+  }
+}
+
+/* ══ POPULATE DROPDOWN ══ */
+function populateRouteDropdown(routes){
+  const sel = document.getElementById("sel_route");
+  sel.innerHTML = `<option value="">— Select a route —</option>`;
+  routes.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.id;
+    opt.textContent = (r.route_code ? r.route_code + " — " : "") + r.route_name;
+    sel.appendChild(opt);
+  });
+
+  // Auto-set order number when route changes
+  sel.addEventListener("change", () => {
+    const routeId = parseInt(sel.value);
+    const d = allData.find(d => d.route.id === routeId);
+    document.getElementById("inp_stop_order").value = d ? (d.stops||[]).length + 1 : 1;
+    document.getElementById("inp_stop_name").focus();
+  });
+}
+
+/* ══ RENDER ALL ROUTE BLOCKS ══ */
+function renderAllBlocks(){
+  const container = document.getElementById("routeBlocksContainer");
+  const badge = document.getElementById("totalBadge");
+  badge.textContent = allData.length + " route" + (allData.length!==1?"s":"");
+
+  if(!allData.length){
+    container.innerHTML = `
+      <div class="text-center text-muted py-5">
+        <div style="font-size:48px;margin-bottom:12px;">🗺️</div>
+        <div style="font-size:15px;font-weight:600;">No routes created yet</div>
+        <div style="font-size:13.5px;margin-top:6px;"><a href="transport_routes.html" style="color:#3b82f6;font-weight:600;">Create a route first</a>, then come back to add stops</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = allData.map(d => {
+    const r = d.route;
+    const stops = d.stops || [];
+
+    const timelineHtml = stops.length
+      ? `<div class="timeline">` +
+          stops.map((s, idx) => {
+            const isFirst = idx === 0, isLast = idx === stops.length - 1;
+            const dotCls = isFirst ? "tl-dot first" : isLast ? "tl-dot last" : "tl-dot";
+            const tag = isFirst ? `<span class="tl-tag start">Origin</span>`
+                      : isLast  ? `<span class="tl-tag end">Final Stop</span>` : "";
+            return `
+              <div class="tl-stop">
+                <div class="${dotCls}">${s.stop_order}</div>
+                <div class="tl-body">
+                  <div class="tl-name">${s.stop_name}</div>
+                  ${s.arrival_time ? `<div class="tl-time">🕐 ${fmt12(s.arrival_time)}</div>` : ""}
+                  ${tag}
+                </div>
+                <button class="btn-remove" onclick="removeStop(${s.id}, ${r.id})">Remove</button>
+              </div>`;
+          }).join("") + `</div>`
+      : `<div class="no-stops-msg">No stops yet — use the form above to add stops to this route</div>`;
+
+    return `
+      <div class="route-block" id="route-block-${r.id}">
+        <div class="route-block-header">
+          <div class="rh-left">
+            ${r.route_code ? `<div class="rh-code">${r.route_code}</div>` : ""}
+            <h5>${r.route_name}</h5>
+            <div class="rh-meta">
+              ${r.start_point ? `<span>📍 ${r.start_point}</span>` : ""}
+              ${r.end_point   ? `<span>🏁 ${r.end_point}</span>`   : ""}
+              ${r.distance_km ? `<span>📏 ${r.distance_km} km</span>` : ""}
+              ${r.estimated_time_min ? `<span>⏱️ ${r.estimated_time_min} min</span>` : ""}
+            </div>
+          </div>
+          <span class="stop-count-pill">🛑 ${stops.length} stop${stops.length!==1?"s":""}</span>
+        </div>
+        <div class="stops-inner">${timelineHtml}</div>
+      </div>`;
+  }).join("");
+}
+
+/* ══ ADD STOP ══ */
+async function addStop(){
+  const routeId   = parseInt(document.getElementById("sel_route").value);
+  const stopName  = document.getElementById("inp_stop_name").value.trim();
+  const stopOrder = parseInt(document.getElementById("inp_stop_order").value) || 1;
+  const arrTime   = document.getElementById("inp_arrival_time").value || null;
+  const msgEl     = document.getElementById("form_msg");
+
+  // Validation
+  if(!routeId){
+    msgEl.className = "error-msg";
+    msgEl.textContent = "Please select a route first.";
+    document.getElementById("sel_route").focus();
+    setTimeout(() => msgEl.textContent = "", 3000); return;
+  }
+  if(!stopName){
+    msgEl.className = "error-msg";
+    msgEl.textContent = "Stop name is required.";
+    document.getElementById("inp_stop_name").focus();
+    setTimeout(() => msgEl.textContent = "", 3000); return;
+  }
+
+  try{
+    await fetch(`/api/transport/routes/${routeId}/stops`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ stop_name:stopName, stop_order:stopOrder, arrival_time:arrTime })
+    });
+
+    // Refresh data for this route
+    const fresh = await fetch(`/api/transport/routes/${routeId}`).then(r => r.json());
+    const idx   = allData.findIndex(d => d.route.id === routeId);
+    if(idx !== -1) allData[idx] = fresh;
+
+    // Clear inputs
+    document.getElementById("inp_stop_name").value   = "";
+    document.getElementById("inp_arrival_time").value = "";
+    document.getElementById("inp_stop_order").value  = (fresh.stops||[]).length + 1;
+
+    msgEl.className   = "success-msg";
+    msgEl.textContent = `✓ Stop "${stopName}" added!`;
+    setTimeout(() => msgEl.textContent = "", 3000);
+
+    renderAllBlocks();
+
+    // Scroll to the updated route block
+    const block = document.getElementById("route-block-"+routeId);
+    if(block) block.scrollIntoView({ behavior:"smooth", block:"center" });
+
+  }catch(e){
+    msgEl.className   = "error-msg";
+    msgEl.textContent = "Error saving stop — check server.";
+    setTimeout(() => msgEl.textContent = "", 4000);
+  }
+}
+
+/* ══ REMOVE STOP ══ */
+async function removeStop(stopId, routeId){
+  if(!confirm("Remove this stop?")) return;
+  await fetch(`/api/transport/stops/${stopId}`, { method:"DELETE" });
+  const fresh = await fetch(`/api/transport/routes/${routeId}`).then(r => r.json());
+  const idx   = allData.findIndex(d => d.route.id === routeId);
+  if(idx !== -1) allData[idx] = fresh;
+  renderAllBlocks();
+}
+
+/* ══ FORMAT TIME 12H ══ */
+function fmt12(t){
+  if(!t) return "";
+  try{
+    const [h,m] = t.split(":");
+    const hr = parseInt(h), ampm = hr >= 12 ? "PM" : "AM", hr12 = hr%12||12;
+    return `${hr12}:${m} ${ampm}`;
+  }catch(e){ return t; }
+}
+
+window.onload = init;
+</script>
+<div class="toast-box" id="toast"><span id="toast_icon">✅</span><span id="toast_msg"></span></div>
+</body>
+</html>

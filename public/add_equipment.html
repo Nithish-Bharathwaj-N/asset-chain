@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Add Equipment</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    /* ===== GENERAL ===== */
+
+body{
+font-family:'Poppins',sans-serif;
+margin:0;
+background:#f1f5f9;
+}
+
+/* ===== SIDEBAR ===== */
+
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+height:100%;
+width:240px;
+background:#1e293b;
+color:white;
+padding:25px 20px;
+}
+
+.sidebar h3{
+text-align:center;
+margin-bottom:30px;
+font-weight:600;
+}
+
+/* Sidebar items */
+
+.menu-item{
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* Logout button */
+
+.logout{
+background:#ef4444;
+text-align:center;
+}
+
+.logout:hover{
+background:#dc2626;
+}
+
+
+/* ===== MAIN CONTENT ===== */
+
+.main{
+margin-left:260px;
+padding:30px;
+min-height:100vh;
+}
+
+/* Page title */
+
+.main h2{
+font-weight:600;
+color:#1e293b;
+}
+
+
+/* ===== CARDS ===== */
+
+.card{
+border:none;
+border-radius:12px;
+}
+
+
+/* ===== TABLE ===== */
+
+.table{
+margin-top:10px;
+}
+
+.table thead{
+font-weight:600;
+}
+
+.table-hover tbody tr:hover{
+background:#f1f5f9;
+}
+
+
+/* ===== BUTTONS ===== */
+
+.btn-primary{
+background:#4f46e5;
+border:none;
+}
+
+.btn-primary:hover{
+background:#4338ca;
+}
+
+
+/* ===== INPUTS ===== */
+
+.form-control{
+border-radius:8px;
+}
+
+
+/* ===== RESPONSIVE ===== */
+
+@media(max-width:900px){
+
+.sidebar{
+width:200px;
+}
+
+.main{
+margin-left:220px;
+}
+
+}
+
+@media(max-width:700px){
+
+.sidebar{
+position:relative;
+width:100%;
+height:auto;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.menu-item{
+margin:5px;
+}
+
+.main{
+margin-left:0;
+}
+
+}
+</style>
+
+</head>
+
+<body class="light">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item" onclick="window.location.href='incharge_dashboard.html'">
+Dashboard
+</div>
+
+<div class="menu-item" onclick="openAddEquipment()">
+Add Equipment
+</div>
+
+<div class="menu-item" onclick="openViewEquipment()">
+View Equipment
+</div>
+
+<div class="menu-item" onclick="openStudentRequests()">
+Student Requests
+</div>
+
+<div class="menu-item" onclick="openBorrowed()">
+Borrowed Items
+</div>
+
+<div class="menu-item" onclick="openPurchaseRequest()">
+Equipment Request
+</div>
+
+
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="main">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<h2>Add Equipment</h2>
+
+<button class="btn btn-secondary" onclick="goBack()">
+← Back
+</button>
+
+</div>
+
+<div class="row mt-4">
+
+<!-- LEFT FORM -->
+
+<div class="col-md-4">
+
+<div class="card p-4 shadow-sm">
+
+<h5 class="mb-3">Add Equipment</h5>
+
+<input id="equipment_name" class="form-control mb-3" placeholder="Equipment Name">
+
+<input id="quantity" type="number" class="form-control mb-3" placeholder="Quantity">
+
+<input id="max_per_student" type="number" class="form-control mb-3" placeholder="Max per Student">
+
+<button class="btn btn-primary w-100" onclick="addEquipment()">
+Add Equipment
+</button>
+
+<p id="message" class="mt-2 text-success"></p>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT LIST -->
+
+<div class="col-md-8">
+
+<div class="card p-4 shadow-sm">
+
+<h5 class="mb-3">Available Equipment</h5>
+
+<table class="table table-hover">
+
+<thead class="table-light">
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Total</th>
+<th>Available</th>
+</tr>
+
+</thead>
+
+<tbody id="equipment_table"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="/js/incharge.js"></script>
+<script src="/js/add_equipment.js"></script>
+
+<script>
+
+function goBack(){
+window.location.href = "incharge_dashboard.html";
+}
+
+</script>
+
+</body>
+
+</html>

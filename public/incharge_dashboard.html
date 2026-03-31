@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Incharge Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    /* General */
+
+body{
+font-family:'Poppins',sans-serif;
+margin:0;
+background:#9ba2a9;
+display:flex;
+min-height:100vh;
+}
+
+/* Sidebar */
+
+.sidebar{
+width:240px;
+background:#1e293b;
+color:white;
+padding:25px 20px;
+position:fixed;
+height:100%;
+}
+
+.sidebar h3{
+text-align:center;
+margin-bottom:30px;
+font-weight:600;
+}
+
+/* Sidebar items */
+
+.menu-item{
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* Logout button */
+
+.logout{
+background:#ef4444;
+text-align:center;
+}
+
+.logout:hover{
+background:#dc2626;
+}
+
+/* Main Content */
+
+.main{
+margin-left:260px;
+padding:30px;
+width:100%;
+background:#dddddd;
+min-height:100vh;
+}
+
+/* Dashboard Title */
+
+.main h2{
+font-weight:600;
+color:#1e293b;
+}
+
+/* Cards */
+
+.card-system{
+padding:25px;
+border-radius:12px;
+color:rgb(255, 255, 255);
+cursor:pointer;
+transition:0.3s;
+height:140px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+box-shadow:0 6px 15px rgba(0,0,0,0.1);
+}
+
+.card-system:hover{
+transform:translateY(-5px);
+}
+
+/* Card Colors */
+
+.card-system.lab{
+background:linear-gradient(135deg,#002d5a,#017d37);
+}
+
+.card-system.transport{
+background:linear-gradient(135deg,#c54d0b,#a68700);
+}
+
+.card-system.it{
+background:linear-gradient(135deg,#6c0370,#512e00da);
+}
+
+.card-system.construction{
+background:linear-gradient(135deg,#004d16,#d1094f);
+}
+
+.card-system h4{
+font-size:18px;
+margin-bottom:5px;
+}
+
+.card-system p{
+font-size:14px;
+opacity:0.9;
+}
+
+/* Responsive */
+
+@media(max-width:900px){
+
+.sidebar{
+width:200px;
+}
+
+.main{
+margin-left:210px;
+}
+
+}
+
+@media(max-width:700px){
+
+.sidebar{
+position:relative;
+width:100%;
+height:auto;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.menu-item{
+margin:5px;
+}
+
+.main{
+margin-left:0;
+}
+
+.card-system{
+margin-bottom:15px;
+}
+
+}
+
+.card-system.purchase{
+background:linear-gradient(135deg,#ff0000,#023a48);
+}
+
+#assetchain{
+    color: #008cff;
+}
+</style>
+
+</head>
+
+<body class="light">
+
+<div class="sidebar">
+
+<h3 id="assetchain"><b>Asset Chain</b></h3>
+
+<div class="menu-item">Dashboard</div>
+
+<div class="menu-item" onclick="openAddEquipment()">
+Add Equipment
+</div>
+
+<div class="menu-item" onclick="openViewEquipment()">
+View Equipment
+</div>
+
+<div class="menu-item" onclick="openStudentRequests()">
+Student Requests
+</div>
+
+<div class="menu-item" onclick="openBorrowed()">
+Borrowed Items
+</div>
+
+<div class="menu-item notification-item" onclick="openNotifications()">
+
+<span>🔔 Notifications</span>
+
+<span id="notif_count"
+style="
+background:red;
+color:white;
+padding:3px 8px;
+border-radius:20px;
+font-size:12px;
+display:none;
+">
+0
+</span>
+
+</div>
+
+<div class="menu-item logout" onclick="logout()">
+Logout
+</div>
+
+</div>
+
+
+<div class="main">
+
+<b></b><h2 id="lab_title">Loading Lab...</h2></b>
+
+<div class="row mt-4">
+
+<div class="row g-4 mt-4">
+
+<div class="col-lg-3 col-md-6">
+<div class="card-system lab" onclick="openAddEquipment()">
+<h4>Add Equipment</h4>
+<p>Add new lab equipment</p>
+</div>
+</div>
+
+<div class="col-lg-3 col-md-6">
+<div class="card-system transport" onclick="openViewEquipment()">
+<h4>View Equipment</h4>
+<p>See available equipment</p>
+</div>
+</div>
+
+<div class="col-lg-3 col-md-6">
+<div class="card-system it" onclick="openStudentRequests()">
+<h4>Student Requests</h4>
+<p>Approve borrow requests</p>
+</div>
+</div>
+
+<div class="col-lg-3 col-md-6">
+<div class="card-system construction" onclick="openBorrowed()">
+<h4>Borrowed Items</h4>
+<p>Track issued equipment</p>
+</div>
+</div>
+
+<div class="col-lg-3 col-md-6">
+<div class="card-system purchase" onclick="openPurchaseRequest()">
+<h4>Equipment Request</h4>
+<p>Request new equipment</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/incharge.js"></script>
+
+</body>
+
+</html>

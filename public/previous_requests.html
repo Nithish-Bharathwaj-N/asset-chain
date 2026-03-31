@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>My Requests</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+background:#eef2f7;
+margin:0;
+}
+
+/* Sidebar */
+
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:230px;
+height:100%;
+background:#0f172a;
+color:white;
+padding-top:20px;
+}
+
+.sidebar h4{
+text-align:center;
+margin-bottom:30px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+padding:12px 20px;
+text-decoration:none;
+}
+
+.sidebar a:hover{
+background:#1e293b;
+}
+
+/* Logout */
+
+.logout{
+position:absolute;
+bottom:20px;
+width:100%;
+}
+
+.logout-btn{
+display:block;
+margin:10px 20px;
+padding:10px;
+text-align:center;
+background:#ef4444;
+color:white;
+border-radius:8px;
+text-decoration:none;
+}
+
+/* Main */
+
+.main{
+margin-left:230px;
+padding:40px;
+}
+
+/* Table Card */
+
+.table-card{
+background:white;
+border-radius:12px;
+padding:20px;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Status Badges */
+
+.status-pending{
+background:#facc15;
+padding:5px 10px;
+border-radius:6px;
+font-size:13px;
+}
+
+.status-approved{
+background:#22c55e;
+color:white;
+padding:5px 10px;
+border-radius:6px;
+font-size:13px;
+}
+
+.status-rejected{
+background:#ef4444;
+color:white;
+padding:5px 10px;
+border-radius:6px;
+font-size:13px;
+}
+
+/* Button */
+
+.qr-btn{
+background:linear-gradient(135deg,#6366f1,#4f46e5);
+border:none;
+color:white;
+padding:6px 14px;
+border-radius:8px;
+}
+
+.qr-btn:hover{
+opacity:0.9;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<h4>CIT Assets</h4>
+
+<a href="student_dashboard.html">Dashboard</a>
+<a href="student_equipment.html">Lab Equipment</a>
+<a href="cart.html">Cart</a>
+<a href="previous_requests.html">My Requests</a>
+
+<div class="logout">
+<a href="#" class="logout-btn" onclick="logout()">Logout</a>
+</div>
+
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h2 class="fw-bold">My Requests</h2>
+
+<a href="student_dashboard.html" class="btn btn-secondary">
+← Back to Dashboard
+</a>
+
+</div>
+
+<div class="table-card">
+
+<table class="table">
+
+<thead class="table-dark">
+
+<tr>
+<th>ID</th>
+<th>Status</th>
+<th>Date</th>
+<th>QR</th>
+</tr>
+
+</thead>
+
+<tbody id="reqTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+/* Logout */
+
+function logout(){
+
+if(confirm("Are you sure you want to logout?")){
+
+localStorage.clear();
+window.location.href="login.html";
+
+}
+
+}
+
+/* Load Requests */
+
+const student = JSON.parse(localStorage.getItem("student"));
+
+fetch(`/api/student/my-requests/${student.id}`)
+.then(res=>res.json())
+.then(data=>{
+
+const table = document.getElementById("reqTable");
+
+data.requests.forEach(r=>{
+
+let statusClass = "";
+
+if(r.status === "pending") statusClass="status-pending";
+if(r.status === "approved") statusClass="status-approved";
+if(r.status === "rejected") statusClass="status-rejected";
+
+table.innerHTML += `
+
+<tr>
+
+<td>#${r.id}</td>
+
+<td>
+<span class="${statusClass}">
+${r.status}
+</span>
+</td>
+
+<td>${new Date(r.created_at).toLocaleString()}</td>
+
+<td>
+
+<button class="qr-btn" onclick="openQR(${r.id})">
+Show QR
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+});
+
+
+/* Open QR */
+
+function openQR(id){
+
+window.location.href = `request_qr.html?id=${id}`;
+
+}
+
+</script>
+
+</body>
+
+</html>

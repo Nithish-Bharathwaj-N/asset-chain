@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Notifications</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f4f6f9;
+margin:0;
+}
+
+/* Sidebar */
+
+.sidebar{
+position:fixed;
+top:0;
+left:0;
+height:100vh;
+width:220px;
+background:#1e293b;
+color:white;
+padding:25px;
+}
+
+.sidebar h3{
+color:#38bdf8;
+font-weight:600;
+}
+
+.menu-item{
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* Main */
+
+.main{
+margin-left:220px;
+padding:40px;
+}
+
+/* Header */
+
+.page-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+}
+
+/* Notification cards */
+
+.notification-card{
+background:white;
+padding:18px;
+border-radius:12px;
+margin-bottom:15px;
+box-shadow:0 6px 14px rgba(0,0,0,0.08);
+cursor:pointer;
+transition:0.2s;
+}
+
+.notification-card:hover{
+transform:translateY(-3px);
+box-shadow:0 8px 18px rgba(0,0,0,0.12);
+background:#f8fafc;
+}
+
+.notification-time{
+font-size:12px;
+color:gray;
+}
+
+.new-badge{
+color:red;
+font-weight:bold;
+font-size:12px;
+}
+
+/* Back button */
+
+.back-btn{
+background:#64748b;
+color:white;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+}
+
+.back-btn:hover{
+background:#475569;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item" onclick="goDashboard()">Dashboard</div>
+<div class="menu-item" onclick="goNotifications()">Notifications</div>
+
+<div class="menu-item" onclick="logout()" style="margin-top:30px;background:#ef4444">
+Logout
+</div>
+
+</div>
+
+
+<!-- Main Content -->
+
+<div class="main">
+
+<div class="page-header">
+
+<h2>Notifications</h2>
+
+<button class="back-btn" onclick="goDashboard()">
+← Back
+</button>
+
+</div>
+
+
+<div id="notifications_list"></div>
+
+</div>
+
+
+<script src="/js/notifications.js"></script>
+
+<script>
+
+function goDashboard(){
+
+const role = localStorage.getItem("role");
+
+if(role === "head"){
+window.location.href = "head_dashboard.html";
+}
+
+else if(role === "incharge"){
+window.location.href = "incharge_dashboard.html";
+}
+
+}
+
+function goNotifications(){
+window.location.href="notifications.html";
+}
+
+function logout(){
+localStorage.clear();
+window.location.href="login.html";
+}
+
+</script>
+
+</body>
+
+</html>

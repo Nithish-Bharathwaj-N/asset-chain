@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Raise Equipment Request</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+background:#eef2f7;
+margin:0;
+}
+
+/* Sidebar */
+
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:230px;
+height:100%;
+background:#0f172a;
+color:white;
+padding-top:20px;
+}
+
+.sidebar h4{
+text-align:center;
+margin-bottom:30px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+padding:12px 20px;
+text-decoration:none;
+transition:0.3s;
+}
+
+.sidebar a:hover{
+background:#1e293b;
+}
+
+.logout{
+position:absolute;
+bottom:20px;
+width:100%;
+}
+
+.logout-btn{
+display:block;
+margin:10px 20px;
+padding:10px;
+text-align:center;
+background:#ef4444;
+color:white;
+border-radius:8px;
+text-decoration:none;
+}
+
+/* Main */
+
+.main{
+margin-left:230px;
+padding:40px;
+}
+
+/* Lab Cards */
+
+.lab-card{
+
+height:140px;
+border-radius:16px;
+padding:25px;
+color:white;
+cursor:pointer;
+transition:0.3s;
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+
+box-shadow:0 6px 18px rgba(0,0,0,0.1);
+
+}
+
+.lab-card:hover{
+
+transform:translateY(-6px);
+
+box-shadow:0 10px 28px rgba(0,0,0,0.2);
+
+}
+
+/* Different gradient colors */
+
+.card1{background:linear-gradient(135deg,#6366f1,#181373);}
+.card2{background:linear-gradient(135deg,#06b6d4,#05708a);}
+.card3{background:linear-gradient(135deg,#22c55e,#0d5728);}
+.card4{background:linear-gradient(135deg,#f97316,#58260b);}
+.card5{background:linear-gradient(135deg,#ec4899,#730637);}
+.card6{background:linear-gradient(135deg,#8b5cf6,#300b6a);}
+.card7{background:linear-gradient(135deg,#3b82f6,#102a63);}
+.card8{background:linear-gradient(135deg,#14b8a6,#09534c);}
+
+.lab-title{
+font-size:20px;
+font-weight:600;
+}
+
+.lab-sub{
+font-size:14px;
+opacity:0.9;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<h4>CIT Assets</h4>
+
+<a href="student_dashboard.html">Dashboard</a>
+
+<a href="student_equipment.html">Lab Equipment</a>
+
+<a href="#">Transport</a>
+
+<a href="#">Library Assets</a>
+
+<div class="logout">
+<a href="#" class="logout-btn" onclick="logout()">Logout</a>
+</div>
+
+</div>
+
+<!-- Main -->
+
+<div class="main">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h2 class="fw-bold">Chennai Institute of Technolgoy Labs</h2>
+
+<button class="btn btn-secondary" onclick="goBack()">← Back</button>
+
+</div>
+
+<div class="row g-4" id="labContainer">
+
+</div>
+
+</div>
+
+<script>
+
+function logout(){
+
+if(confirm("Are you sure you want to logout?")){
+
+localStorage.removeItem("student");
+
+window.location.href="login.html";
+
+}
+
+}
+
+function goBack(){
+
+window.location.href="student_equipment.html";
+
+}
+
+/* Load labs */
+
+fetch("/api/labs")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+const container=document.getElementById("labContainer");
+
+let colorIndex=1;
+
+data.forEach(lab=>{
+
+container.innerHTML+=`
+
+<div class="col-md-3">
+
+<div class="lab-card card${colorIndex}" onclick="openLab(${lab.id})">
+
+<div class="lab-title">${lab.lab_name}</div>
+
+<div class="lab-sub">View Lab Details</div>
+
+</div>
+
+</div>
+
+`;
+
+colorIndex++;
+
+if(colorIndex>8) colorIndex=1;
+
+});
+
+});
+
+function openLab(id){
+
+window.location.href="lab_equipment.html?lab="+id;
+
+}
+
+</script>
+
+</body>
+
+</html>

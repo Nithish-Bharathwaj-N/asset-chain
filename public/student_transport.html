@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Transport</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body { font-family:'Poppins',sans-serif; background:#f4f6f9; margin:0; }
+
+/* ── Sidebar ── */
+.sidebar { position:fixed; left:0; top:0; width:230px; height:100%; background:#111827; color:white; padding-top:20px; }
+.sidebar h4 { text-align:center; margin-bottom:30px; }
+.sidebar a { display:block; color:white; padding:12px 20px; text-decoration:none; transition:0.3s; }
+.sidebar a:hover, .sidebar a.active { background:#374151; }
+.logout { position:absolute; bottom:20px; width:100%; }
+.logout-btn { display:block; margin:10px 20px; padding:10px; text-align:center; background:#ef4444; color:white; border-radius:8px; text-decoration:none; }
+.logout-btn:hover { background:#dc2626; }
+
+/* ── Main ── */
+.main { margin-left:230px; padding:40px; }
+.back-link { color:#4f46e5; font-size:14px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px; margin-bottom:20px; }
+.back-link:hover { color:#4338ca; }
+
+/* ── Search ── */
+.search-wrap { position:relative; margin-bottom:28px; max-width:480px; }
+.search-wrap input {
+  width:100%; padding:12px 18px 12px 44px;
+  border:1.5px solid #e2e8f0; border-radius:12px;
+  font-size:14px; font-family:'Poppins',sans-serif;
+  background:white; box-shadow:0 2px 8px rgba(0,0,0,0.05); outline:none; transition:0.2s;
+}
+.search-wrap input:focus { border-color:#4f46e5; box-shadow:0 0 0 3px rgba(79,70,229,0.1); }
+.search-wrap input::placeholder { color:#b0bec5; }
+.s-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:15px; }
+
+/* ── Bus Card ── */
+.bus-card {
+  background:white; border-radius:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.07); overflow:hidden;
+  transition:box-shadow 0.25s;
+  margin-bottom:0;
+}
+.bus-card:hover { box-shadow:0 10px 28px rgba(0,0,0,0.12); }
+
+.bus-header {
+  display:flex; align-items:center; gap:18px;
+  padding:20px 24px; cursor:pointer; user-select:none;
+  border-bottom:2px solid transparent; transition:border-color 0.2s;
+}
+.bus-header:hover { background:#f8fafc; }
+.bus-header.expanded { border-bottom-color:#4f46e5; }
+
+.bus-icon-wrap {
+  width:52px; height:52px; border-radius:12px; flex-shrink:0;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  display:flex; align-items:center; justify-content:center; color:white; font-size:22px;
+}
+.bus-info { flex:1; min-width:0; }
+.bus-number { font-size:17px; font-weight:700; color:#1e293b; }
+.bus-sub    { font-size:13px; color:#64748b; margin-top:2px; }
+
+.bus-meta { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.meta-tag { background:#f1f5f9; color:#475569; font-size:12px; font-weight:500; padding:4px 11px; border-radius:20px; display:flex; align-items:center; gap:5px; }
+.meta-tag i { color:#4f46e5; font-size:11px; }
+
+.status-badge { font-size:11.5px; font-weight:600; padding:4px 12px; border-radius:20px; }
+.s-active      { background:#dcfce7; color:#166534; }
+.s-inactive    { background:#f1f5f9; color:#64748b; }
+.s-maintenance { background:#fef3c7; color:#92400e; }
+.s-retired     { background:#fee2e2; color:#991b1b; }
+
+.chevron { color:#94a3b8; font-size:14px; transition:transform 0.25s; flex-shrink:0; }
+.chevron.open { transform:rotate(180deg); color:#4f46e5; }
+
+/* ── Routes Dropdown ── */
+.routes-panel { display:none; padding:0 24px 20px; animation:slideDown 0.2s ease; }
+.routes-panel.open { display:block; }
+@keyframes slideDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+.routes-label { font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.8px; margin:16px 0 12px; }
+
+/* ── Route Row ── */
+.route-row {
+  border:1.5px solid #e2e8f0; border-radius:12px; overflow:hidden; margin-bottom:10px;
+}
+.route-row-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; cursor:pointer; background:#fafbfc; transition:0.2s; gap:12px;
+}
+.route-row-header:hover { background:#f0f4ff; }
+.route-row-header.open  { background:#ede9fe; border-bottom:1.5px solid #c4b5fd; }
+
+.rr-left { display:flex; align-items:center; gap:12px; min-width:0; }
+.rr-code { background:#4f46e5; color:white; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; white-space:nowrap; flex-shrink:0; }
+.rr-name { font-size:14px; font-weight:600; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rr-path { font-size:12px; color:#64748b; margin-top:2px; }
+
+.rr-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.rr-stop-pill { background:#ede9fe; color:#4f46e5; font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:20px; }
+.rr-chevron   { color:#94a3b8; font-size:12px; transition:transform 0.2s; }
+.rr-chevron.open { transform:rotate(180deg); color:#4f46e5; }
+
+/* ── Stops Dropdown ── */
+.stops-panel { display:none; padding:16px 20px 18px; background:white; }
+.stops-panel.open { display:block; }
+
+/* Timeline */
+.timeline { position:relative; padding-left:18px; }
+.timeline::before {
+  content:''; position:absolute; left:15px; top:17px;
+  width:2px; height:calc(100% - 34px);
+  background:linear-gradient(to bottom,#4f46e5,#a5b4fc 70%,transparent);
+}
+.tl-item { display:flex; align-items:flex-start; gap:14px; padding-bottom:18px; }
+.tl-item:last-child { padding-bottom:0; }
+.tl-dot {
+  width:30px; height:30px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#4f46e5,#7c3aed); color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; z-index:1; position:relative;
+  box-shadow:0 2px 8px rgba(79,70,229,0.3);
+}
+.tl-dot.first { background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 2px 8px rgba(16,185,129,0.3); }
+.tl-dot.last  { background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 2px 8px rgba(245,158,11,0.3); }
+.tl-body { flex:1; padding-top:4px; }
+.tl-name { font-size:14px; font-weight:600; color:#1e293b; }
+.tl-detail { display:flex; gap:14px; flex-wrap:wrap; margin-top:3px; }
+.tl-time { font-size:12px; color:#64748b; display:flex; align-items:center; gap:4px; }
+.tl-tag { font-size:10px; font-weight:700; padding:1px 8px; border-radius:20px; }
+.tl-tag.start { background:#dcfce7; color:#166534; }
+.tl-tag.end   { background:#fef3c7; color:#92400e; }
+
+/* Route meta strip */
+.route-meta-strip { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed #e2e8f0; }
+.rm-pill { background:#f1f5f9; color:#475569; font-size:12px; padding:4px 12px; border-radius:20px; display:flex; align-items:center; gap:5px; }
+.rm-pill i { color:#4f46e5; font-size:11px; }
+
+.no-stops { text-align:center; padding:24px; color:#94a3b8; font-size:13.5px; background:#f8fafc; border-radius:10px; border:1.5px dashed #e2e8f0; }
+.no-routes { text-align:center; padding:20px; color:#94a3b8; font-size:13.5px; }
+
+/* Loading */
+.spinner-wrap { text-align:center; padding:80px 0; color:#94a3b8; font-size:15px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h4>CIT Assets</h4>
+  <a href="student_dashboard.html">Dashboard</a>
+  <a href="student_equipment.html">Lab Equipment</a>
+  <a href="student_transport.html" class="active">Transport</a>
+  <a href="#">Library Assets</a>
+  <div class="logout">
+    <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <a href="student_dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+  <h2 class="fw-bold mb-1">🚌 Transport</h2>
+  <p class="text-muted mb-4" style="font-size:14px;">Click a bus to view its route, then expand a route to see all stops</p>
+
+  <div class="search-wrap">
+    <i class="fas fa-search s-icon"></i>
+    <input type="text" id="searchInput" placeholder="Search bus number, route or stop…" oninput="filterBuses()">
+  </div>
+
+  <div id="busContainer">
+    <div class="spinner-wrap"><i class="fas fa-spinner fa-spin me-2"></i>Loading transport…</div>
+  </div>
+</div>
+
+<script>
+let allBusData = []; // [{ bus, routes:[{ route, stops:[] }] }]
+
+/* ══ LOAD ══ */
+async function load(){
+  try{
+    // 1. Get all buses
+    const buses = await (await fetch("/api/transport/buses")).json();
+
+    // 2. For each bus get its assigned routes (from bus detail endpoint)
+    const busDetails = await Promise.all(
+      buses.map(b =>
+        fetch(`/api/transport/buses/${b.id}`)
+          .then(r => r.json())
+          .catch(() => ({ bus:b, routes:[] }))
+      )
+    );
+
+    // 3. For each assigned route, fetch its stops
+    for(const bd of busDetails){
+      const assignedRoutes = bd.routes || [];
+      bd.routeDetails = await Promise.all(
+        assignedRoutes.map(ar =>
+          fetch(`/api/transport/routes/${ar.route_id || ar.id}`)
+            .then(r => r.json())
+            .catch(() => null)
+        )
+      );
+      bd.routeDetails = bd.routeDetails.filter(Boolean);
+    }
+
+    allBusData = busDetails;
+    render(allBusData);
+  }catch(e){
+    document.getElementById("busContainer").innerHTML = `<div class="spinner-wrap text-danger">Could not load transport data</div>`;
+  }
+}
+
+/* ══ RENDER ══ */
+function render(data){
+  const container = document.getElementById("busContainer");
+
+  if(!data.length){
+    container.innerHTML = `<div class="spinner-wrap">
+      <i class="fas fa-bus" style="font-size:42px;display:block;margin-bottom:12px;"></i>
+      No buses available
+    </div>`;
+    return;
+  }
+
+  const statusMap = {
+    active:           { cls:'s-active',      label:'Active'      },
+    inactive:         { cls:'s-inactive',     label:'Inactive'    },
+    under_maintenance:{ cls:'s-maintenance',  label:'Maintenance' },
+    retired:          { cls:'s-retired',      label:'Retired'     },
+  };
+
+  container.innerHTML = `<div class="row g-3">` +
+    data.map((bd, bi) => {
+      const b  = bd.bus;
+      const sm = statusMap[b.status] || { cls:'s-inactive', label: b.status };
+      const routeDetails = bd.routeDetails || [];
+
+      /* Build route rows HTML */
+      const routeRowsHtml = routeDetails.length
+        ? routeDetails.map((rd, ri) => {
+            const r     = rd.route;
+            const stops = rd.stops || [];
+            const rid   = `rd-${bi}-${ri}`;
+
+            /* Stops timeline */
+            const stopsHtml = stops.length
+              ? `<div class="route-meta-strip">
+                  ${r.start_point        ? `<span class="rm-pill"><i class="fas fa-circle" style="font-size:7px;"></i> ${r.start_point}</span>` : ''}
+                  ${r.end_point          ? `<span class="rm-pill"><i class="fas fa-flag-checkered"></i> ${r.end_point}</span>` : ''}
+                  ${r.distance_km        ? `<span class="rm-pill"><i class="fas fa-road"></i> ${r.distance_km} km</span>` : ''}
+                  ${r.estimated_time_min ? `<span class="rm-pill"><i class="fas fa-clock"></i> ~${r.estimated_time_min} min</span>` : ''}
+                 </div>
+                 <div class="timeline">` +
+                  stops.map((s, si) => {
+                    const isFirst = si === 0, isLast = si === stops.length - 1;
+                    const dotCls  = isFirst ? 'tl-dot first' : isLast ? 'tl-dot last' : 'tl-dot';
+                    const tag     = isFirst ? `<span class="tl-tag start">Origin</span>`
+                                  : isLast  ? `<span class="tl-tag end">Final Stop</span>` : '';
+                    return `
+                      <div class="tl-item">
+                        <div class="${dotCls}">${s.stop_order}</div>
+                        <div class="tl-body">
+                          <div class="tl-name">${s.stop_name}</div>
+                          <div class="tl-detail">
+                            ${s.arrival_time ? `<span class="tl-time"><i class="fas fa-clock"></i> ${fmt12(s.arrival_time)}</span>` : ''}
+                            ${tag}
+                          </div>
+                        </div>
+                      </div>`;
+                  }).join('') +
+                `</div>`
+              : `<div class="no-stops"><i class="fas fa-info-circle me-2"></i>No stops added for this route yet</div>`;
+
+            return `
+              <div class="route-row">
+                <div class="route-row-header" id="rrh-${rid}" onclick="toggleRoute('${rid}')">
+                  <div class="rr-left">
+                    ${r.route_code ? `<span class="rr-code">${r.route_code}</span>` : ''}
+                    <div>
+                      <div class="rr-name">${r.route_name}</div>
+                      ${(r.start_point||r.end_point) ? `<div class="rr-path">${r.start_point||''} ${r.start_point&&r.end_point?'→':''} ${r.end_point||''}</div>` : ''}
+                    </div>
+                  </div>
+                  <div class="rr-right">
+                    <span class="rr-stop-pill"><i class="fas fa-map-marker-alt me-1"></i>${stops.length} stop${stops.length!==1?'s':''}</span>
+                    <i class="fas fa-chevron-down rr-chevron" id="rrc-${rid}"></i>
+                  </div>
+                </div>
+                <div class="stops-panel" id="sp-${rid}">
+                  ${stopsHtml}
+                </div>
+              </div>`;
+          }).join('')
+        : `<div class="no-routes"><i class="fas fa-info-circle me-1"></i>No routes assigned to this bus yet</div>`;
+
+      return `
+        <div class="col-12">
+          <div class="bus-card">
+            <div class="bus-header" id="bh-${bi}" onclick="toggleBus(${bi})">
+              <div class="bus-icon-wrap">🚌</div>
+              <div class="bus-info">
+                <div class="bus-number">${b.bus_number}</div>
+                <div class="bus-sub">${b.registration_number}${b.vehicle_model ? ' · ' + b.vehicle_model : ''}</div>
+              </div>
+              <div class="bus-meta">
+                ${b.seating_capacity ? `<span class="meta-tag"><i class="fas fa-users"></i>${b.seating_capacity} seats</span>` : ''}
+                ${b.fuel_type        ? `<span class="meta-tag"><i class="fas fa-gas-pump"></i>${b.fuel_type}</span>` : ''}
+                ${b.driver_name      ? `<span class="meta-tag"><i class="fas fa-user-tie"></i>${b.driver_name}</span>` : ''}
+                <span class="status-badge ${sm.cls}">${sm.label}</span>
+              </div>
+              <i class="fas fa-chevron-down chevron" id="chev-${bi}"></i>
+            </div>
+            <div class="routes-panel" id="rp-${bi}">
+              <div class="routes-label">Assigned Routes</div>
+              ${routeRowsHtml}
+            </div>
+          </div>
+        </div>`;
+    }).join('') +
+  `</div>`;
+}
+
+/* ══ TOGGLE BUS ══ */
+function toggleBus(bi){
+  const panel = document.getElementById(`rp-${bi}`);
+  const header = document.getElementById(`bh-${bi}`);
+  const chev   = document.getElementById(`chev-${bi}`);
+  const isOpen = panel.classList.contains("open");
+  panel.classList.toggle("open", !isOpen);
+  header.classList.toggle("expanded", !isOpen);
+  chev.classList.toggle("open", !isOpen);
+}
+
+/* ══ TOGGLE ROUTE ══ */
+function toggleRoute(rid){
+  const sp  = document.getElementById(`sp-${rid}`);
+  const hdr = document.getElementById(`rrh-${rid}`);
+  const chv = document.getElementById(`rrc-${rid}`);
+  const isOpen = sp.classList.contains("open");
+  sp.classList.toggle("open", !isOpen);
+  hdr.classList.toggle("open", !isOpen);
+  chv.classList.toggle("open", !isOpen);
+}
+
+/* ══ SEARCH ══ */
+function filterBuses(){
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  if(!q){ render(allBusData); return; }
+  const filtered = allBusData.filter(bd => {
+    const b = bd.bus;
+    const routeText = (bd.routeDetails||[]).map(rd =>
+      (rd.route.route_name||'') + (rd.route.route_code||'') +
+      (rd.stops||[]).map(s => s.stop_name).join(' ')
+    ).join(' ').toLowerCase();
+    return (
+      (b.bus_number||'').toLowerCase().includes(q) ||
+      (b.registration_number||'').toLowerCase().includes(q) ||
+      (b.vehicle_model||'').toLowerCase().includes(q) ||
+      (b.driver_name||'').toLowerCase().includes(q) ||
+      routeText.includes(q)
+    );
+  });
+  render(filtered);
+}
+
+/* ══ FORMAT 12H ══ */
+function fmt12(t){
+  if(!t) return '';
+  try{
+    const [h,m] = t.split(':');
+    const hr = parseInt(h), ampm = hr>=12?'PM':'AM', hr12 = hr%12||12;
+    return `${hr12}:${m} ${ampm}`;
+  }catch(e){ return t; }
+}
+
+function logout(){
+  if(confirm("Are you sure you want to logout?")){
+    localStorage.removeItem("student");
+    window.location.href = "login.html";
+  }
+}
+
+window.onload = load;
+</script>
+</body>
+</html>

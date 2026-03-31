@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Equipment Request</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f4f6f9;
+margin:0;
+}
+
+/* ===== SIDEBAR ===== */
+
+.sidebar{
+height:100vh;
+background:linear-gradient(180deg,#1e293b,#0f172a);
+color:white;
+padding:25px;
+}
+
+.sidebar h3{
+color:#38bdf8;
+font-weight:600;
+margin-bottom:30px;
+}
+
+.menu-item{
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* ===== MAIN ===== */
+
+.dashboard{
+padding:40px;
+}
+
+/* ===== CARD ===== */
+
+.card-box{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 8px 18px rgba(0,0,0,0.08);
+}
+
+/* ===== FORM INPUTS ===== */
+
+.form-control{
+border-radius:8px;
+}
+
+/* ===== TABLE ===== */
+
+.table{
+margin-top:10px;
+}
+
+.status{
+padding:4px 10px;
+border-radius:6px;
+font-size:13px;
+font-weight:500;
+}
+
+.pending{
+background:#fef3c7;
+color:#92400e;
+}
+
+.approved{
+background:#d1fae5;
+color:#065f46;
+}
+
+.rejected{
+background:#fee2e2;
+color:#7f1d1d;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+<div class="row">
+
+<!-- Sidebar -->
+
+<div class="col-md-2 sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item" onclick="goDashboard()">Dashboard</div>
+
+<div class="menu-item">Equipment Request</div>
+
+<div class="menu-item" onclick="openBorrowed()">Borrowed Items</div>
+
+<div class="menu-item" onclick="logout()">Logout</div>
+
+</div>
+
+
+<!-- Main -->
+
+<div class="col-md-10 dashboard">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h2>Equipment Request</h2>
+
+<button class="btn btn-secondary" onclick="goBack()">← Back</button>
+
+</div>
+
+
+<div class="row g-4">
+
+<!-- Request Form -->
+
+<div class="col-md-4">
+
+<div class="card-box">
+
+<h5 class="mb-3">Raise New Request</h5>
+
+<input id="product_name" class="form-control mb-2" placeholder="Product Name">
+
+<input id="quantity_needed" type="number" class="form-control mb-2" placeholder="Quantity Needed">
+
+<input id="existing_quantity" type="number" class="form-control mb-2" placeholder="Existing Quantity">
+
+<input id="estimated_price" type="number" class="form-control mb-2" placeholder="Estimated Price">
+
+<input id="reference_link" class="form-control mb-3" placeholder="Product Reference Link">
+
+<button class="btn btn-primary w-100" onclick="submitRequest()">
+Submit Request
+</button>
+
+<p id="message" class="mt-2"></p>
+
+</div>
+
+</div>
+
+
+<!-- Previous Requests -->
+
+<div class="col-md-8">
+
+<div class="card-box">
+
+<h5>Previous Requests</h5>
+
+<table class="table">
+
+<thead>
+
+<tr>
+<th>Product</th>
+<th>Requested Qty</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="requests_table"></tbody>
+
+</table>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="/js/equipment_request.js"></script>
+
+<script>
+
+function goBack(){
+window.location.href="incharge_dashboard.html";
+}
+
+function goDashboard(){
+window.location.href="incharge_dashboard.html";
+}
+
+function logout(){
+localStorage.clear();
+window.location.href="login.html";
+}
+
+</script>
+
+</body>
+
+</html>

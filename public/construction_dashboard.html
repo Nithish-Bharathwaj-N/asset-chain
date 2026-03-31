@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Construction — AssetChain</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Poppins', sans-serif; background: #f1f5f9; }
+.sidebar { width: 240px; background: #1e293b; color: white; padding: 25px 20px; position: fixed; height: 100%; overflow-y: auto; }
+.sidebar h3 { color: #38bdf8; font-weight: 600; margin-bottom: 30px; }
+.menu-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.menu-item:hover, .menu-item.active { background: #334155; }
+.main { margin-left: 260px; padding: 30px; }
+.stat-card { border-radius: 14px; padding: 24px; color: white; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.stat-card h2 { font-size: 2rem; font-weight: 700; margin: 0; }
+.stat-card p { margin: 0; opacity: 0.9; font-size: 0.88rem; }
+.bg-red    { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.bg-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.bg-blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.bg-green  { background: linear-gradient(135deg, #10b981, #059669); }
+.bg-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.bg-teal   { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+.card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+table th { background: #1e293b; color: white; }
+.logout { background: #ef4444; text-align: center; }
+.nav-link { color: #333; }
+.nav-link.active { background: #1e293b !important; color: white !important; }
+</style>
+</head>
+<body>
+<div class="d-flex">
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h3>AssetChain</h3>
+  <div class="menu-item" onclick="window.location.href='head_dashboard.html'">🏠 Dashboard</div>
+  <div class="menu-item" onclick="window.location.href='transport_inventory.html'">🚌 Transport</div>
+  <div class="menu-item" onclick="window.location.href='it_dashboard.html'">💻 IT Assets</div>
+  <div class="menu-item active">🏗️ Construction</div>
+  <div class="menu-item" onclick="window.location.href='view_labs.html'">🔬 Labs</div>
+  <div class="menu-item logout mt-4" onclick="logout()">Logout</div>
+</div>
+
+<!-- Main -->
+<div class="main w-100">
+  <h2 class="fw-bold mb-4">Construction Management</h2>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2"><div class="stat-card bg-red"><h2 id="s_active">—</h2><p>Active Projects</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-blue"><h2 id="s_total_p">—</h2><p>Total Projects</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-green"><h2 id="s_workers">—</h2><p>Active Workers</p></div></div>
+    <div class="col-md-2"><div class="stat-card bg-orange"><h2 id="s_lowstock">—</h2><p>Low Stock Alerts</p></div></div>
+    <div class="col-md-4"><div class="stat-card bg-indigo"><h2 id="s_budget">—</h2><p>Total Budget (₹)</p></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-pills mb-3">
+    <li class="nav-item"><a class="nav-link active" href="#" onclick="showTab('projects', this)">Projects</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('inventory', this)">Materials Inventory</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('issues', this)">Issue / Return</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('workers', this)">Workers</a></li>
+    <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('equipment', this)">Machinery</a></li>
+  </ul>
+
+  <!-- Projects Tab -->
+  <div id="tab_projects">
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn btn-dark" onclick="openAddProject()">+ New Project</button>
+    </div>
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr>
+            <th>Project</th><th>Location</th><th>Contractor</th>
+            <th>Start</th><th>End</th><th>Budget</th><th>Spent</th><th>Status</th>
+          </tr></thead>
+          <tbody id="projects_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Materials Inventory Tab -->
+  <div id="tab_inventory" style="display:none">
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn btn-dark" onclick="openAddItem()">+ Add Material</button>
+    </div>
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr>
+            <th>Item</th><th>Category</th><th>Unit</th>
+            <th>Total Qty</th><th>Available</th><th>Reorder Level</th>
+            <th>Unit Cost</th><th>Supplier</th><th>Status</th>
+          </tr></thead>
+          <tbody id="inv_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Issue / Return Tab -->
+  <div id="tab_issues" style="display:none">
+    <div class="d-flex gap-2 justify-content-end mb-2">
+      <button class="btn btn-success" onclick="openAddPurchase()">+ Record Purchase (Stock In)</button>
+      <button class="btn btn-warning" onclick="openIssue()">+ Issue Material</button>
+    </div>
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr>
+            <th>Item</th><th>Project</th><th>Qty</th><th>Issued To</th><th>Purpose</th>
+            <th>Date</th><th>Returned</th>
+          </tr></thead>
+          <tbody id="issues_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workers Tab -->
+  <div id="tab_workers" style="display:none">
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn btn-dark" onclick="openAddWorker()">+ Add Worker</button>
+    </div>
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr>
+            <th>Name</th><th>Trade</th><th>Contractor</th><th>Phone</th>
+            <th>Daily Rate (₹)</th><th>Status</th>
+          </tr></thead>
+          <tbody id="workers_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Machinery Tab -->
+  <div id="tab_equipment" style="display:none">
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn btn-dark" onclick="openAddEquipment()">+ Add Equipment</button>
+    </div>
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+          <thead><tr>
+            <th>Equipment</th><th>Category</th><th>Brand/Model</th>
+            <th>Owned/Rented</th><th>Status</th><th>Next Service</th>
+          </tr></thead>
+          <tbody id="equip_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div>
+
+<!-- ADD PROJECT MODAL -->
+<div class="modal fade" id="projectModal" tabindex="-1">
+<div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header bg-dark text-white"><h5 class="modal-title">New Construction Project</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-8"><label>Project Name *</label><input id="p_name" class="form-control"></div>
+      <div class="col-md-4"><label>Project Code</label><input id="p_code" class="form-control" placeholder="PROJ-001"></div>
+      <div class="col-md-6"><label>Location</label><input id="p_loc" class="form-control"></div>
+      <div class="col-md-6"><label>Contractor</label><input id="p_contractor" class="form-control"></div>
+      <div class="col-md-6"><label>Project Manager</label><input id="p_pm" class="form-control"></div>
+      <div class="col-md-6"><label>Budget (₹)</label><input id="p_budget" class="form-control" type="number"></div>
+      <div class="col-md-4"><label>Start Date</label><input id="p_start" class="form-control" type="date"></div>
+      <div class="col-md-4"><label>End Date</label><input id="p_end" class="form-control" type="date"></div>
+      <div class="col-md-4"><label>Status</label>
+        <select id="p_status" class="form-select">
+          <option value="planning">Planning</option>
+          <option value="active">Active</option>
+          <option value="on_hold">On Hold</option>
+          <option value="completed">Completed</option>
+        </select></div>
+      <div class="col-12"><label>Description</label><textarea id="p_desc" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-dark" onclick="saveProject()">Save</button>
+  </div>
+</div></div></div>
+
+<!-- ADD MATERIAL MODAL -->
+<div class="modal fade" id="itemModal" tabindex="-1">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header bg-dark text-white"><h5 class="modal-title">Add Material to Inventory</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-12"><label>Item Name *</label><input id="i_name" class="form-control"></div>
+      <div class="col-md-6"><label>Category</label><select id="i_cat" class="form-select"></select></div>
+      <div class="col-md-6"><label>Unit</label><input id="i_unit" class="form-control" placeholder="bags / kg / sq ft"></div>
+      <div class="col-md-4"><label>Total Qty</label><input id="i_total" class="form-control" type="number" value="0"></div>
+      <div class="col-md-4"><label>Available Qty</label><input id="i_avail" class="form-control" type="number" value="0"></div>
+      <div class="col-md-4"><label>Reorder Level</label><input id="i_reorder" class="form-control" type="number" value="0"></div>
+      <div class="col-md-6"><label>Unit Cost (₹)</label><input id="i_cost" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Supplier</label><input id="i_supplier" class="form-control"></div>
+      <div class="col-12"><label>Storage Location</label><input id="i_stor" class="form-control"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-dark" onclick="saveItem()">Save</button>
+  </div>
+</div></div></div>
+
+<!-- ISSUE MATERIAL MODAL -->
+<div class="modal fade" id="issueModal" tabindex="-1">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header bg-warning"><h5 class="modal-title">Issue Material</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-12"><label>Material *</label><select id="iss_item" class="form-select"></select></div>
+      <div class="col-md-6"><label>Project</label><select id="iss_proj" class="form-select"></select></div>
+      <div class="col-md-6"><label>Quantity *</label><input id="iss_qty" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Issued To</label><input id="iss_to" class="form-control"></div>
+      <div class="col-md-6"><label>Date</label><input id="iss_date" class="form-control" type="date"></div>
+      <div class="col-12"><label>Purpose</label><textarea id="iss_purpose" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-warning" onclick="saveIssue()">Issue</button>
+  </div>
+</div></div></div>
+
+<!-- PURCHASE MODAL -->
+<div class="modal fade" id="purchaseModal" tabindex="-1">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header bg-success text-white"><h5 class="modal-title">Record Purchase (Stock In)</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-12"><label>Material *</label><select id="pur_item" class="form-select"></select></div>
+      <div class="col-md-6"><label>Project</label><select id="pur_proj" class="form-select"></select></div>
+      <div class="col-md-6"><label>Quantity *</label><input id="pur_qty" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Unit Cost (₹)</label><input id="pur_ucost" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Supplier</label><input id="pur_sup" class="form-control"></div>
+      <div class="col-md-6"><label>Invoice #</label><input id="pur_inv" class="form-control"></div>
+      <div class="col-md-6"><label>Purchase Date *</label><input id="pur_date" class="form-control" type="date"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-success" onclick="savePurchase()">Save</button>
+  </div>
+</div></div></div>
+
+<!-- ADD WORKER MODAL -->
+<div class="modal fade" id="workerModal" tabindex="-1">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header bg-dark text-white"><h5 class="modal-title">Add Worker</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-6"><label>Name *</label><input id="w_name" class="form-control"></div>
+      <div class="col-md-6"><label>Worker ID</label><input id="w_id" class="form-control" placeholder="W-001"></div>
+      <div class="col-md-6"><label>Trade</label>
+        <select id="w_trade" class="form-select">
+          <option value="mason">Mason</option>
+          <option value="carpenter">Carpenter</option>
+          <option value="plumber">Plumber</option>
+          <option value="electrician">Electrician</option>
+          <option value="painter">Painter</option>
+          <option value="helper" selected>Helper</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="other">Other</option>
+        </select></div>
+      <div class="col-md-6"><label>Phone</label><input id="w_phone" class="form-control"></div>
+      <div class="col-md-6"><label>Contractor</label><input id="w_con" class="form-control"></div>
+      <div class="col-md-6"><label>Daily Rate (₹)</label><input id="w_rate" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Joined Date</label><input id="w_joined" class="form-control" type="date"></div>
+      <div class="col-12"><label>Address</label><textarea id="w_addr" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-dark" onclick="saveWorker()">Save</button>
+  </div>
+</div></div></div>
+
+<!-- ADD EQUIPMENT MODAL -->
+<div class="modal fade" id="equipModal" tabindex="-1">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header bg-dark text-white"><h5 class="modal-title">Add Machinery/Equipment</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-8"><label>Equipment Name *</label><input id="eq_name" class="form-control"></div>
+      <div class="col-md-4"><label>Code</label><input id="eq_code" class="form-control"></div>
+      <div class="col-md-6"><label>Category</label>
+        <select id="eq_cat" class="form-select">
+          <option value="excavator">Excavator</option><option value="mixer">Mixer</option>
+          <option value="crane">Crane</option><option value="compactor">Compactor</option>
+          <option value="generator">Generator</option><option value="scaffolding">Scaffolding</option>
+          <option value="hand_tool">Hand Tool</option><option value="vehicle">Vehicle</option>
+          <option value="other" selected>Other</option>
+        </select></div>
+      <div class="col-md-6"><label>Brand</label><input id="eq_brand" class="form-control"></div>
+      <div class="col-md-6"><label>Owned/Rented</label>
+        <select id="eq_own" class="form-select">
+          <option value="owned">Owned</option>
+          <option value="rented">Rented</option>
+        </select></div>
+      <div class="col-md-6"><label>Rental Rate/Day (₹)</label><input id="eq_rate" class="form-control" type="number"></div>
+      <div class="col-md-6"><label>Last Service</label><input id="eq_last" class="form-control" type="date"></div>
+      <div class="col-md-6"><label>Next Service</label><input id="eq_next" class="form-control" type="date"></div>
+      <div class="col-12"><label>Notes</label><textarea id="eq_notes" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-dark" onclick="saveEquipment()">Save</button>
+  </div>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let cats = [], items = [], projects = [];
+
+async function loadStats() {
+  const d = await fetch('/api/construction/stats').then(r => r.json());
+  document.getElementById('s_active').textContent    = d.active_projects;
+  document.getElementById('s_total_p').textContent   = d.total_projects;
+  document.getElementById('s_workers').textContent   = d.active_workers;
+  document.getElementById('s_lowstock').textContent  = d.low_stock;
+  document.getElementById('s_budget').textContent    = d.total_budget ? '₹' + Number(d.total_budget).toLocaleString('en-IN') : '₹0';
+}
+
+async function loadProjects() {
+  projects = await fetch('/api/construction/projects').then(r => r.json());
+  const tbody = document.getElementById('projects_tbody');
+  tbody.innerHTML = '';
+  if (!projects.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No projects</td></tr>'; return; }
+  const statusColors = { planning: 'secondary', active: 'success', on_hold: 'warning', completed: 'primary', cancelled: 'danger' };
+  projects.forEach(p => {
+    const budget  = p.budget  ? '₹' + Number(p.budget).toLocaleString('en-IN')  : '—';
+    const spent   = p.spent   ? '₹' + Number(p.spent).toLocaleString('en-IN')   : '₹0';
+    tbody.innerHTML += `<tr>
+      <td><strong>${p.project_name}</strong><br><small class="text-muted">${p.project_code || ''}</small></td>
+      <td>${p.location || '—'}</td>
+      <td>${p.contractor || '—'}</td>
+      <td>${p.start_date ? new Date(p.start_date).toLocaleDateString('en-IN') : '—'}</td>
+      <td>${p.end_date   ? new Date(p.end_date).toLocaleDateString('en-IN')   : '—'}</td>
+      <td>${budget}</td>
+      <td>${spent}</td>
+      <td><span class="badge bg-${statusColors[p.status] || 'secondary'}">${p.status}</span></td>
+    </tr>`;
+  });
+}
+
+async function loadInventory() {
+  items = await fetch('/api/construction/inventory').then(r => r.json());
+  const tbody = document.getElementById('inv_tbody');
+  tbody.innerHTML = '';
+  items.forEach(i => {
+    const lowStock = i.available_qty <= i.reorder_level && i.reorder_level > 0;
+    tbody.innerHTML += `<tr class="${lowStock ? 'table-warning' : ''}">
+      <td>${i.item_name}${lowStock ? ' <span class="badge bg-danger">Low Stock</span>' : ''}</td>
+      <td>${i.category_name || '—'}</td>
+      <td>${i.unit || '—'}</td>
+      <td>${i.total_quantity}</td>
+      <td>${i.available_qty}</td>
+      <td>${i.reorder_level}</td>
+      <td>${i.unit_cost ? '₹' + i.unit_cost : '—'}</td>
+      <td>${i.supplier || '—'}</td>
+      <td><span class="badge ${lowStock ? 'bg-danger' : 'bg-success'}">${lowStock ? 'Low' : 'OK'}</span></td>
+    </tr>`;
+  });
+}
+
+async function loadIssues() {
+  const data = await fetch('/api/construction/issues').then(r => r.json());
+  const tbody = document.getElementById('issues_tbody');
+  tbody.innerHTML = '';
+  data.forEach(i => {
+    tbody.innerHTML += `<tr>
+      <td>${i.item_name}</td>
+      <td>${i.project_name || '—'}</td>
+      <td>${i.quantity} ${i.unit || ''}</td>
+      <td>${i.issued_to || '—'}</td>
+      <td>${i.purpose || '—'}</td>
+      <td>${i.issue_date ? new Date(i.issue_date).toLocaleDateString('en-IN') : '—'}</td>
+      <td>${i.returned_qty > 0 ? i.returned_qty + ' ' + (i.unit || '') : '—'}</td>
+    </tr>`;
+  });
+}
+
+async function loadWorkers() {
+  const data = await fetch('/api/construction/workers').then(r => r.json());
+  const tbody = document.getElementById('workers_tbody');
+  tbody.innerHTML = '';
+  data.forEach(w => {
+    tbody.innerHTML += `<tr>
+      <td>${w.name}</td>
+      <td>${w.trade}</td>
+      <td>${w.contractor || '—'}</td>
+      <td>${w.phone || '—'}</td>
+      <td>${w.daily_rate ? '₹' + w.daily_rate : '—'}</td>
+      <td><span class="badge bg-${w.status === 'active' ? 'success' : 'secondary'}">${w.status}</span></td>
+    </tr>`;
+  });
+}
+
+async function loadEquipment() {
+  const data = await fetch('/api/construction/equipment').then(r => r.json());
+  const tbody = document.getElementById('equip_tbody');
+  tbody.innerHTML = '';
+  const sc = { available: 'success', in_use: 'primary', under_repair: 'warning', retired: 'secondary' };
+  data.forEach(e => {
+    tbody.innerHTML += `<tr>
+      <td>${e.equipment_name}</td>
+      <td>${e.category}</td>
+      <td>${[e.brand, e.model].filter(Boolean).join(' ') || '—'}</td>
+      <td><span class="badge ${e.owned_rented === 'owned' ? 'bg-dark' : 'bg-info'}">${e.owned_rented}</span></td>
+      <td><span class="badge bg-${sc[e.status] || 'secondary'}">${e.status}</span></td>
+      <td>${e.next_service ? new Date(e.next_service).toLocaleDateString('en-IN') : '—'}</td>
+    </tr>`;
+  });
+}
+
+function showTab(tab, el) {
+  ['projects','inventory','issues','workers','equipment'].forEach(t => {
+    document.getElementById('tab_' + t).style.display = t === tab ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+  if (tab === 'inventory') loadInventory();
+  else if (tab === 'issues')    loadIssues();
+  else if (tab === 'workers')   loadWorkers();
+  else if (tab === 'equipment') loadEquipment();
+}
+
+async function loadCategories() {
+  cats = await fetch('/api/construction/categories').then(r => r.json());
+  const sel = document.getElementById('i_cat');
+  cats.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+}
+
+function openAddProject() { new bootstrap.Modal(document.getElementById('projectModal')).show(); }
+
+async function saveProject() {
+  const body = {
+    project_name: document.getElementById('p_name').value.trim(),
+    project_code: document.getElementById('p_code').value,
+    location: document.getElementById('p_loc').value,
+    contractor: document.getElementById('p_contractor').value,
+    project_manager: document.getElementById('p_pm').value,
+    budget: document.getElementById('p_budget').value,
+    start_date: document.getElementById('p_start').value,
+    end_date: document.getElementById('p_end').value,
+    status: document.getElementById('p_status').value,
+    description: document.getElementById('p_desc').value
+  };
+  if (!body.project_name) return alert('Project name required');
+  const res = await fetch('/api/construction/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('projectModal')).hide();
+  loadStats(); loadProjects(); alert(data.message);
+}
+
+function openAddItem() { new bootstrap.Modal(document.getElementById('itemModal')).show(); }
+
+async function saveItem() {
+  const body = {
+    item_name: document.getElementById('i_name').value.trim(),
+    category_id: document.getElementById('i_cat').value,
+    unit: document.getElementById('i_unit').value,
+    total_quantity: document.getElementById('i_total').value,
+    available_qty: document.getElementById('i_avail').value,
+    reorder_level: document.getElementById('i_reorder').value,
+    unit_cost: document.getElementById('i_cost').value,
+    supplier: document.getElementById('i_supplier').value,
+    storage_location: document.getElementById('i_stor').value
+  };
+  if (!body.item_name) return alert('Item name required');
+  const res = await fetch('/api/construction/inventory', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
+  loadInventory(); alert(data.message);
+}
+
+async function openIssue() {
+  items = await fetch('/api/construction/inventory').then(r => r.json());
+  projects = await fetch('/api/construction/projects').then(r => r.json());
+  const iSel = document.getElementById('iss_item');
+  const pSel = document.getElementById('iss_proj');
+  iSel.innerHTML = '<option value="">— Select Material —</option>';
+  pSel.innerHTML = '<option value="">— No Project —</option>';
+  items.forEach(i => iSel.innerHTML += `<option value="${i.id}">${i.item_name} (${i.available_qty} ${i.unit || ''})</option>`);
+  projects.forEach(p => pSel.innerHTML += `<option value="${p.id}">${p.project_name}</option>`);
+  document.getElementById('iss_date').value = new Date().toISOString().split('T')[0];
+  new bootstrap.Modal(document.getElementById('issueModal')).show();
+}
+
+async function saveIssue() {
+  const body = {
+    item_id: document.getElementById('iss_item').value,
+    project_id: document.getElementById('iss_proj').value,
+    quantity: document.getElementById('iss_qty').value,
+    issued_to: document.getElementById('iss_to').value,
+    purpose: document.getElementById('iss_purpose').value,
+    issue_date: document.getElementById('iss_date').value
+  };
+  if (!body.item_id || !body.quantity) return alert('Material and quantity required');
+  const res = await fetch('/api/construction/issues', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('issueModal')).hide();
+  loadInventory(); loadIssues(); alert(data.message);
+}
+
+async function openAddPurchase() {
+  items = await fetch('/api/construction/inventory').then(r => r.json());
+  projects = await fetch('/api/construction/projects').then(r => r.json());
+  const iSel = document.getElementById('pur_item'), pSel = document.getElementById('pur_proj');
+  iSel.innerHTML = '<option value="">— Select Material —</option>';
+  pSel.innerHTML = '<option value="">— No Project —</option>';
+  items.forEach(i => iSel.innerHTML += `<option value="${i.id}">${i.item_name}</option>`);
+  projects.forEach(p => pSel.innerHTML += `<option value="${p.id}">${p.project_name}</option>`);
+  document.getElementById('pur_date').value = new Date().toISOString().split('T')[0];
+  new bootstrap.Modal(document.getElementById('purchaseModal')).show();
+}
+
+async function savePurchase() {
+  const body = {
+    item_id: document.getElementById('pur_item').value,
+    project_id: document.getElementById('pur_proj').value,
+    quantity: document.getElementById('pur_qty').value,
+    unit_cost: document.getElementById('pur_ucost').value,
+    supplier: document.getElementById('pur_sup').value,
+    invoice_number: document.getElementById('pur_inv').value,
+    purchase_date: document.getElementById('pur_date').value
+  };
+  if (!body.item_id || !body.quantity || !body.purchase_date) return alert('Material, quantity and date required');
+  const res = await fetch('/api/construction/purchases', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('purchaseModal')).hide();
+  loadInventory(); loadStats(); alert(data.message);
+}
+
+function openAddWorker() { new bootstrap.Modal(document.getElementById('workerModal')).show(); }
+
+async function saveWorker() {
+  const body = {
+    name: document.getElementById('w_name').value.trim(),
+    worker_id: document.getElementById('w_id').value,
+    trade: document.getElementById('w_trade').value,
+    phone: document.getElementById('w_phone').value,
+    contractor: document.getElementById('w_con').value,
+    daily_rate: document.getElementById('w_rate').value,
+    joined_date: document.getElementById('w_joined').value,
+    address: document.getElementById('w_addr').value
+  };
+  if (!body.name) return alert('Worker name required');
+  const res = await fetch('/api/construction/workers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('workerModal')).hide();
+  loadWorkers(); loadStats(); alert(data.message);
+}
+
+function openAddEquipment() { new bootstrap.Modal(document.getElementById('equipModal')).show(); }
+
+async function saveEquipment() {
+  const body = {
+    equipment_name: document.getElementById('eq_name').value.trim(),
+    equipment_code: document.getElementById('eq_code').value,
+    category: document.getElementById('eq_cat').value,
+    brand: document.getElementById('eq_brand').value,
+    owned_rented: document.getElementById('eq_own').value,
+    rental_rate: document.getElementById('eq_rate').value,
+    last_service: document.getElementById('eq_last').value,
+    next_service: document.getElementById('eq_next').value,
+    notes: document.getElementById('eq_notes').value
+  };
+  if (!body.equipment_name) return alert('Equipment name required');
+  const res = await fetch('/api/construction/equipment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('equipModal')).hide();
+  loadEquipment(); alert(data.message);
+}
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+loadStats(); loadProjects(); loadCategories();
+</script>
+</body>
+</html>

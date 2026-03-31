@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Request Details</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+background:#f4f6f9;
+font-family:'Poppins',sans-serif;
+margin:0;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+top:0;
+left:0;
+width:230px;
+height:100vh;
+background:linear-gradient(180deg,#1e293b,#0f172a);
+color:white;
+padding:25px;
+overflow-y:auto;
+}
+
+.sidebar h3{
+color:#38bdf8;
+margin-bottom:30px;
+}
+
+.menu-item{
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* MAIN */
+
+.dashboard{
+margin-left:230px;
+padding:40px;
+}
+
+/* CARD */
+
+.card-box{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 8px 18px rgba(0,0,0,0.08);
+margin-bottom:25px;
+}
+
+.detail-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+}
+
+.detail-item{
+background:#f8fafc;
+padding:15px;
+border-radius:10px;
+}
+
+.status-badge{
+padding:6px 14px;
+border-radius:20px;
+font-weight:600;
+}
+
+.status-pending{
+background:#facc15;
+}
+
+.status-approved{
+background:#22c55e;
+color:white;
+}
+
+.status-rejected{
+background:#ef4444;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item" onclick="goDashboard()">Dashboard</div>
+<div class="menu-item">Incharge Requests</div>
+<div class="menu-item" onclick="goNotifications()">Notifications</div>
+
+</div>
+
+
+<div class="dashboard">
+
+<div class="d-flex justify-content-between mb-4">
+
+<h2>Request Details</h2>
+
+<button class="btn btn-secondary" onclick="goBack()">← Back</button>
+
+</div>
+
+
+<!-- REQUEST INFO -->
+
+<div class="card-box">
+
+<h5>Request Information</h5>
+
+<div class="detail-grid">
+
+<div class="detail-item">
+<b>Lab</b><br>
+<span id="lab"></span>
+</div>
+
+<div class="detail-item">
+<b>Requested By</b><br>
+<span id="user"></span>
+</div>
+
+<div class="detail-item">
+<b>Product</b><br>
+<span id="product"></span>
+</div>
+
+<div class="detail-item">
+<b>Requested Quantity</b><br>
+<span id="qty"></span>
+</div>
+
+<div class="detail-item">
+<b>Existing Quantity</b><br>
+<span id="existing"></span>
+</div>
+
+<div class="detail-item">
+<b>Reference</b><br>
+<a id="link" target="_blank">Open</a>
+</div>
+
+</div>
+
+<br>
+
+<b>Status:</b> 
+<span id="status_badge" class="status-badge"></span>
+
+</div>
+
+
+<!-- AVAILABILITY -->
+
+<div class="card-box">
+
+<h5>Equipment Availability Across Labs</h5>
+
+<p>Total Units: <b id="total_units"></b></p>
+
+<table class="table table-striped">
+
+<thead>
+<tr>
+<th>Lab</th>
+<th>Quantity</th>
+</tr>
+</thead>
+
+<tbody id="labs_table"></tbody>
+
+</table>
+
+</div>
+
+
+<!-- DECISION SECTION -->
+
+<div id="decision_box" class="card-box">
+
+<h5>Your Decision</h5>
+
+<button class="btn btn-success" onclick="showOrderForm()">Approve</button>
+
+<button class="btn btn-danger" onclick="showRejectForm()">Reject</button>
+
+</div>
+
+
+<!-- APPROVE FORM -->
+
+<div id="order_section" class="card-box" style="display:none">
+
+<h6>Approve Request</h6>
+
+<select id="order_type" class="form-control mb-2">
+
+<option value="ordered">Ordered Now</option>
+<option value="later">Order Later</option>
+
+</select>
+
+<input type="number" id="ordered_qty"
+class="form-control mb-2"
+placeholder="Ordered Quantity">
+
+<input type="datetime-local"
+id="reminder_time"
+class="form-control mb-2">
+
+<input type="file"
+id="invoice_file"
+class="form-control mb-3">
+
+<button class="btn btn-primary"
+onclick="approveRequest()">
+
+Submit Approval
+
+</button>
+
+</div>
+
+
+<!-- REJECT FORM -->
+
+<div id="reject_section" class="card-box" style="display:none">
+
+<h6>Reject Request</h6>
+
+<textarea id="reject_reason"
+class="form-control mb-3"
+placeholder="Reject reason"></textarea>
+
+<button class="btn btn-danger"
+onclick="rejectRequest()">
+
+Reject Request
+
+</button>
+
+</div>
+
+
+<!-- APPROVED INFO -->
+
+<div id="approved_info" class="card-box" style="display:none">
+
+<h5>Approved Details</h5>
+
+<p><b>Order Type:</b> <span id="approved_order_type"></span></p>
+
+<p><b>Ordered Quantity:</b> <span id="approved_qty"></span></p>
+
+<p><b>Reminder Time:</b> <span id="approved_reminder"></span></p>
+
+<p><b>Order Status:</b> <span id="order_status"></span></p>
+
+<p id="invoice_area"></p>
+
+<div id="mark_ordered_section" style="display:none">
+
+<h6>Mark Ordered</h6>
+
+<input type="file" id="mark_invoice" class="form-control mb-2">
+
+<button class="btn btn-success" onclick="markOrdered()">
+Upload Invoice & Mark Ordered
+</button>
+
+</div>
+
+</div>
+
+
+<!-- REJECT INFO -->
+
+<div id="reject_info" class="card-box" style="display:none">
+
+<h5 class="text-danger">Request Rejected</h5>
+
+<p><b>Reason:</b> <span id="reject_reason_text"></span></p>
+
+</div>
+
+</div>
+
+
+<script src="/js/head_request_details.js"></script>
+
+<script>
+
+function goBack(){
+window.location.href="incharge_requests.html";
+}
+
+function goDashboard(){
+window.location.href="head_dashboard.html";
+}
+
+function goNotifications(){
+window.location.href="notifications.html";
+}
+
+</script>
+
+</body>
+
+</html>

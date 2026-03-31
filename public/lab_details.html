@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Lab Details</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* ===== BODY ===== */
+
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:#eef2f7;
+}
+
+
+/* ===== SIDEBAR ===== */
+
+.sidebar{
+
+position:fixed;
+left:0;
+top:0;
+height:100%;
+width:240px;
+
+background:#1e293b;
+
+color:white;
+
+padding:25px 20px;
+
+}
+
+.sidebar h3{
+
+text-align:center;
+
+margin-bottom:35px;
+
+font-weight:600;
+
+}
+
+.menu-item{
+
+padding:12px;
+
+margin-bottom:12px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+}
+
+.menu-item:hover{
+
+background:#334155;
+
+}
+
+
+/* ===== MAIN AREA ===== */
+
+.main{
+
+margin-left:260px;
+
+padding:35px;
+
+}
+
+
+/* ===== LAB HEADER ===== */
+
+.lab-header{
+
+background:linear-gradient(135deg,#6366f1,#4f46e5);
+
+color:white;
+
+padding:30px;
+
+border-radius:14px;
+
+margin-bottom:30px;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.12);
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+.lab-header h2{
+
+margin:0;
+
+font-weight:600;
+
+}
+
+.back-btn{
+
+background:white;
+
+border:none;
+
+padding:8px 16px;
+
+border-radius:8px;
+
+color:#4f46e5;
+
+font-weight:500;
+
+}
+
+
+/* ===== CARD SECTIONS ===== */
+
+.section-card{
+
+background:white;
+
+padding:25px;
+
+border-radius:14px;
+
+margin-bottom:25px;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+
+}
+
+
+/* ===== INCHARGE LIST ===== */
+
+#incharges_list{
+
+list-style:none;
+
+padding-left:0;
+
+}
+
+#incharges_list li{
+
+padding:10px 15px;
+
+margin-bottom:8px;
+
+background:#f8fafc;
+
+border-radius:8px;
+
+border-left:4px solid #6366f1;
+
+}
+
+
+/* ===== TABLE ===== */
+
+.table{
+
+margin-top:15px;
+
+}
+
+thead{
+
+background:#6366f1;
+
+color:white;
+
+}
+
+thead th{
+
+padding:12px;
+
+}
+
+tbody td{
+
+padding:12px;
+
+}
+
+tbody tr:hover{
+
+background:#f8fafc;
+
+}
+
+
+/* ===== DAMAGE COLORS ===== */
+
+.light{
+
+color:#f59e0b;
+
+font-weight:600;
+
+}
+
+.medium{
+
+color:#ef4444;
+
+font-weight:600;
+
+}
+
+.heavy{
+
+color:#7f1d1d;
+
+font-weight:600;
+
+}
+
+
+/* ===== RESPONSIVE ===== */
+
+@media(max-width:900px){
+
+.sidebar{
+
+width:200px;
+
+}
+
+.main{
+
+margin-left:210px;
+
+}
+
+}
+
+@media(max-width:700px){
+
+.sidebar{
+
+position:relative;
+
+width:100%;
+
+height:auto;
+
+display:flex;
+
+justify-content:center;
+
+}
+
+.main{
+
+margin-left:0;
+
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ===== SIDEBAR ===== -->
+
+<div class="sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item" onclick="window.location.href='head_dashboard.html'">
+Dashboard
+</div>
+
+<div class="menu-item" onclick="window.location.href='lab_inventory.html'">
+Lab Inventory
+</div>
+
+</div>
+
+
+
+<!-- ===== MAIN ===== -->
+
+<div class="main">
+
+
+<!-- LAB HEADER -->
+
+<div class="lab-header">
+
+<h2 id="lab_name"></h2>
+
+<button class="back-btn" onclick="goBack()">← Back</button>
+
+</div>
+
+
+
+<!-- INCHARGE SECTION -->
+
+<div class="section-card">
+
+<h4>Lab Incharges</h4>
+
+<ul id="incharges_list"></ul>
+
+</div>
+
+
+
+<!-- EQUIPMENT TABLE -->
+
+<div class="section-card">
+
+<h4>Equipment Status</h4>
+
+<table class="table">
+
+<thead>
+
+<tr>
+<th>Equipment</th>
+<th>Total</th>
+<th>Available</th>
+<th>Issued</th>
+<th>Light</th>
+<th>Medium</th>
+<th>Heavy</th>
+</tr>
+
+</thead>
+
+<tbody id="equipment_table"></tbody>
+
+</table>
+
+</div>
+
+
+</div>
+
+
+<script src="/js/lab_details.js"></script>
+
+<script>
+
+function goBack(){
+
+window.location.href="view_labs.html";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

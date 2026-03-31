@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Software Licenses — AssetChain</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Poppins', sans-serif; background: #f1f5f9; }
+.sidebar { width: 240px; background: #1e293b; color: white; padding: 25px 20px; position: fixed; height: 100%; }
+.sidebar h3 { color: #38bdf8; font-weight: 600; }
+.menu-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.menu-item:hover, .menu-item.active { background: #334155; }
+.main { margin-left: 260px; padding: 30px; }
+.card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+table th { background: #1e293b; color: white; }
+.expiry-warn { color: #d97706; font-weight: 600; }
+.expiry-expired { color: #dc2626; font-weight: 700; }
+.logout { background: #ef4444; text-align: center; }
+</style>
+</head>
+<body>
+<div class="d-flex">
+<div class="sidebar">
+  <h3>AssetChain</h3>
+  <div class="menu-item" onclick="window.location.href='head_dashboard.html'">🏠 Dashboard</div>
+  <div class="menu-item" onclick="window.location.href='it_dashboard.html'">💻 IT Assets</div>
+  <div class="menu-item active">📋 Software Licenses</div>
+  <div class="menu-item logout mt-4" onclick="logout()">Logout</div>
+</div>
+<div class="main w-100">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Software Licenses</h2>
+    <button class="btn btn-dark" onclick="openAdd()">+ Add License</button>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr>
+            <th>Software</th><th>Version</th><th>Type</th><th>Licenses</th>
+            <th>Vendor</th><th>Expiry Date</th><th>Cost</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="sw_tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+  <div class="modal-header bg-dark text-white">
+    <h5 class="modal-title">Add Software License</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row g-3">
+      <div class="col-md-6"><label>Software Name *</label><input id="sw_name" class="form-control"></div>
+      <div class="col-md-3"><label>Version</label><input id="sw_ver" class="form-control"></div>
+      <div class="col-md-3"><label>Type</label>
+        <select id="sw_type" class="form-select">
+          <option value="perpetual">Perpetual</option>
+          <option value="subscription">Subscription</option>
+          <option value="open_source">Open Source</option>
+          <option value="trial">Trial</option>
+        </select>
+      </div>
+      <div class="col-md-4"><label>License Key</label><input id="sw_key" class="form-control" placeholder="XXXX-XXXX-XXXX"></div>
+      <div class="col-md-4"><label>Total Licenses</label><input id="sw_total" class="form-control" type="number" value="1"></div>
+      <div class="col-md-4"><label>Vendor</label><input id="sw_vendor" class="form-control"></div>
+      <div class="col-md-4"><label>Purchase Date</label><input id="sw_pdate" class="form-control" type="date"></div>
+      <div class="col-md-4"><label>Expiry Date</label><input id="sw_exp" class="form-control" type="date"></div>
+      <div class="col-md-4"><label>Cost (₹)</label><input id="sw_cost" class="form-control" type="number"></div>
+      <div class="col-12"><label>Assigned To (machines / users)</label><textarea id="sw_assigned" class="form-control" rows="2"></textarea></div>
+      <div class="col-12"><label>Notes</label><textarea id="sw_notes" class="form-control" rows="2"></textarea></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button class="btn btn-dark" onclick="saveSoftware()">Save</button>
+  </div>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+async function loadSoftware() {
+  const data = await fetch('/api/it/software').then(r => r.json());
+  const tbody = document.getElementById('sw_tbody');
+  tbody.innerHTML = '';
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No licenses found</td></tr>'; return; }
+  const today = new Date();
+  const warn  = new Date(); warn.setDate(today.getDate() + 30);
+  data.forEach(s => {
+    let expiryClass = '', expiryText = s.expiry_date ? new Date(s.expiry_date).toLocaleDateString('en-IN') : 'No Expiry';
+    if (s.expiry_date) {
+      const exp = new Date(s.expiry_date);
+      if (exp < today)    expiryClass = 'expiry-expired';
+      else if (exp < warn) expiryClass = 'expiry-warn';
+    }
+    const typeBadge = { perpetual: 'dark', subscription: 'primary', open_source: 'success', trial: 'warning' };
+    tbody.innerHTML += `<tr>
+      <td>${s.software_name}</td>
+      <td>${s.version || '—'}</td>
+      <td><span class="badge bg-${typeBadge[s.license_type] || 'secondary'}">${s.license_type}</span></td>
+      <td>${s.used_licenses}/${s.total_licenses}</td>
+      <td>${s.vendor || '—'}</td>
+      <td class="${expiryClass}">${expiryText}</td>
+      <td>${s.cost ? '₹' + Number(s.cost).toLocaleString('en-IN') : '—'}</td>
+      <td><button class="btn btn-sm btn-outline-danger" onclick="deleteSW(${s.id})">🗑</button></td>
+    </tr>`;
+  });
+}
+
+function openAdd() { new bootstrap.Modal(document.getElementById('addModal')).show(); }
+
+async function saveSoftware() {
+  const body = {
+    software_name: document.getElementById('sw_name').value.trim(),
+    version: document.getElementById('sw_ver').value,
+    license_key: document.getElementById('sw_key').value,
+    license_type: document.getElementById('sw_type').value,
+    total_licenses: document.getElementById('sw_total').value,
+    vendor: document.getElementById('sw_vendor').value,
+    purchase_date: document.getElementById('sw_pdate').value,
+    expiry_date: document.getElementById('sw_exp').value,
+    cost: document.getElementById('sw_cost').value,
+    assigned_to: document.getElementById('sw_assigned').value,
+    notes: document.getElementById('sw_notes').value
+  };
+  if (!body.software_name) return alert('Software name required');
+  const res = await fetch('/api/it/software', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const data = await res.json();
+  bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+  loadSoftware(); alert(data.message);
+}
+
+async function deleteSW(id) {
+  if (!confirm('Delete this license?')) return;
+  await fetch('/api/it/software/' + id, { method: 'DELETE' });
+  loadSoftware();
+}
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+loadSoftware();
+</script>
+</body>
+</html>

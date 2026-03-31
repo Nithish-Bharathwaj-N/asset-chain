@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Lab Inventory</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f4f6f9;
+color:#111;
+}
+
+/* Sidebar */
+
+.sidebar{
+height:100vh;
+background:linear-gradient(180deg,#1e293b,#0f172a);
+color:white;
+padding:25px;
+}
+
+.sidebar h3{
+color:#38bdf8;
+font-weight:600;
+margin-bottom:30px;
+}
+
+.menu-item{
+padding:12px;
+margin-bottom:10px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.menu-item:hover{
+background:#334155;
+}
+
+/* Dashboard */
+
+.dashboard{
+padding:40px;
+position:relative;
+}
+
+/* Title */
+
+.title{
+font-weight:600;
+margin-bottom:25px;
+}
+
+/* Back Button */
+
+.back-btn{
+position:absolute;
+top:40px;
+right:40px;
+background:#64748b;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:8px;
+transition:0.3s;
+}
+
+.back-btn:hover{
+background:#475569;
+}
+
+/* Cards */
+
+.card-system{
+height:170px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:20px;
+border-radius:14px;
+box-shadow:0px 8px 18px rgba(0,0,0,0.1);
+cursor:pointer;
+transition:0.3s;
+color:white;
+text-align:center;
+}
+
+.card-system:hover{
+transform:translateY(-6px);
+box-shadow:0px 12px 25px rgba(0,0,0,0.15);
+}
+
+/* Card Colors */
+
+.lab{
+background:linear-gradient(135deg,#6366f1,#4f46e5);
+}
+
+.transport{
+background:linear-gradient(135deg,#10b981,#059669);
+}
+
+.it{
+background:linear-gradient(135deg,#f59e0b,#d97706);
+}
+
+.construction{
+background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+<div class="row">
+
+<!-- Sidebar -->
+
+<div class="col-md-2 sidebar">
+
+<h3>AssetChain</h3>
+
+<div class="menu-item" onclick="goDashboard()">Dashboard</div>
+<div class="menu-item">Lab Inventory</div>
+<div class="menu-item">Transport</div>
+<div class="menu-item">Reports</div>
+
+</div>
+
+
+<!-- Main Dashboard -->
+
+<div class="col-md-10 dashboard">
+
+<h2 class="title">Lab Inventory</h2>
+
+<button class="back-btn" onclick="goBack()">← Back</button>
+
+<div class="row g-4">
+
+<div class="col-md-3">
+<div class="card-system lab" onclick="openCreateLab()">
+<h4>📦 Create Lab</h4>
+<p>Add new lab</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card-system transport" onclick="openCreateIncharge()">
+<h4>👨‍🔬 Create Incharge</h4>
+<p>Assign lab incharge</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card-system it" onclick="openViewLabs()">
+<h4>🔬 View Labs</h4>
+<p>Equipment & status</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card-system construction" onclick="openRequests()">
+<h4>📑 Incharge Requests</h4>
+<p>Purchase approvals</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="js/head.js"></script>
+
+<script>
+
+function goBack(){
+window.location.href = "head_dashboard.html";
+}
+
+</script>
+
+</body>
+
+</html>

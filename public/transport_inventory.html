@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Transport Management</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body { font-family:'Poppins',sans-serif; background:#f4f6f9; margin:0; }
+
+/* SIDEBAR */
+.sidebar { height:100vh; background:linear-gradient(180deg,#1e293b,#0f172a); color:white; padding:25px; }
+.sidebar h3 { color:#f59e0b; font-weight:600; margin-bottom:30px; }
+.menu-item { padding:12px; margin-bottom:8px; border-radius:8px; cursor:pointer; transition:0.3s; font-size:14px; }
+.menu-item:hover, .menu-item.active { background:#334155; }
+.menu-item a { color:white; text-decoration:none; display:block; }
+
+/* MAIN */
+.main { padding:35px; }
+.page-title { font-weight:600; color:#1e293b; margin-bottom:8px; }
+.breadcrumb-text { color:#64748b; font-size:13px; margin-bottom:25px; }
+
+/* STAT CARDS */
+.stat-card {
+  padding:22px;
+  border-radius:14px;
+  color:white;
+  box-shadow:0 8px 20px rgba(0,0,0,0.12);
+  margin-bottom:20px;
+  transition:0.3s;
+}
+.stat-card:hover { transform:translateY(-4px); }
+.stat-card h2 { font-size:36px; font-weight:700; margin:0; }
+.stat-card p { margin:4px 0 0; opacity:0.9; font-size:13px; }
+.bg-amber { background:linear-gradient(135deg,#f59e0b,#d97706); }
+.bg-green { background:linear-gradient(135deg,#10b981,#059669); }
+.bg-blue { background:linear-gradient(135deg,#3b82f6,#2563eb); }
+.bg-purple { background:linear-gradient(135deg,#8b5cf6,#7c3aed); }
+.bg-red { background:linear-gradient(135deg,#ef4444,#dc2626); }
+.bg-cyan { background:linear-gradient(135deg,#06b6d4,#0891b2); }
+
+/* NAV CARDS */
+.nav-card {
+  background:white;
+  border-radius:14px;
+  padding:25px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.35s;
+  text-align:center;
+  margin-bottom:20px;
+  border-top:4px solid transparent;
+}
+.nav-card:hover { transform:translateY(-6px); box-shadow:0 14px 30px rgba(0,0,0,0.12); }
+.nav-card .icon { font-size:40px; margin-bottom:12px; }
+.nav-card h5 { font-weight:600; color:#1e293b; margin-bottom:5px; }
+.nav-card p { font-size:12px; color:#64748b; margin:0; }
+
+.border-amber { border-top-color:#f59e0b; }
+.border-green { border-top-color:#10b981; }
+.border-blue { border-top-color:#3b82f6; }
+.border-purple { border-top-color:#8b5cf6; }
+.border-red { border-top-color:#ef4444; }
+.border-cyan { border-top-color:#06b6d4; }
+.border-orange { border-top-color:#f97316; }
+.border-pink { border-top-color:#ec4899; }
+
+/* ALERT BADGES */
+.alert-badge {
+  display:inline-block;
+  background:#fef3c7;
+  color:#92400e;
+  border:1px solid #fde68a;
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:13px;
+  margin-right:10px;
+  margin-bottom:10px;
+}
+.alert-badge.danger { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+
+.back-btn { background:#64748b; border:none; color:white; padding:8px 16px; border-radius:8px; }
+.back-btn:hover { background:#475569; }
+</style>
+</head>
+
+<body>
+<div class="container-fluid">
+<div class="row">
+
+<!-- SIDEBAR -->
+<div class="col-md-2 sidebar">
+  <h3>🚌 Transport</h3>
+  
+  <div class="menu-item"><a href="transport_inventory.html">Dashboard</a></div>
+  <div class="menu-item"><a href="transport_buses.html">🚌 Buses</a></div>
+  <div class="menu-item"><a href="transport_routes.html">🗺️ Routes</a></div>
+  <div class="menu-item"><a href="transport_stops.html">🛑 Bus Stops</a></div>
+  <div class="menu-item"><a href="transport_drivers.html">👨‍✈️ Drivers</a></div>
+  <div class="menu-item"><a href="transport_insurance.html">🛡️ Insurance</a></div>
+  <div class="menu-item"><a href="transport_rc.html">📋 RC Book</a></div>
+  <div class="menu-item"><a href="transport_maintenance.html">🔧 Maintenance</a></div>
+
+</div>
+
+<!-- MAIN -->
+<div class="col-md-10 main">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <h2 class="page-title">Transport Management</h2>
+      <p class="breadcrumb-text">Chennai Institute of Technology — Vehicle Asset Management</p>
+    </div>
+    <button class="back-btn" onclick="window.location.href='head_dashboard.html'">← Dashboard</button>
+  </div>
+
+  <!-- ALERT STRIP -->
+  <div id="alertStrip" class="mb-4" style="display:none;">
+    <div id="alertContent"></div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2 col-6">
+      <div class="stat-card bg-amber">
+        <h2 id="totalBuses">—</h2>
+        <p>Total Buses</p>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="stat-card bg-green">
+        <h2 id="activeBuses">—</h2>
+        <p>Active Buses</p>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="stat-card bg-blue">
+        <h2 id="totalRoutes">—</h2>
+        <p>Active Routes</p>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="stat-card bg-purple">
+        <h2 id="totalDrivers">—</h2>
+        <p>Drivers</p>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="stat-card bg-red">
+        <h2 id="underMaintenance">—</h2>
+        <p>Maintenance</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION CARDS -->
+  <h5 class="fw-600 mb-3" style="color:#475569;">Quick Access</h5>
+  <div class="row g-3">
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-amber" onclick="window.location.href='transport_buses.html'">
+        <div class="icon">🚌</div>
+        <h5>Bus Facilities</h5>
+        <p>Add & manage buses, assign drivers</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-blue" onclick="window.location.href='transport_routes.html'">
+        <div class="icon">🗺️</div>
+        <h5>Routes</h5>
+        <p>Manage bus routes</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-cyan" onclick="window.location.href='transport_stops.html'">
+        <div class="icon">🛑</div>
+        <h5>Bus Stops</h5>
+        <p>View stops by route</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-green" onclick="window.location.href='transport_drivers.html'">
+        <div class="icon">👨‍✈️</div>
+        <h5>Drivers</h5>
+        <p>Driver details, license tracking</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-red" onclick="window.location.href='transport_insurance.html'">
+        <div class="icon">🛡️</div>
+        <h5>Insurance</h5>
+        <p>Policy details & expiry alerts</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-purple" onclick="window.location.href='transport_rc.html'">
+        <div class="icon">📋</div>
+        <h5>RC Book</h5>
+        <p>Registration certificate details</p>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="nav-card border-pink" onclick="window.location.href='transport_maintenance.html'">
+        <div class="icon">🔧</div>
+        <h5>Maintenance</h5>
+        <p>Service & repair history</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div>
+</div>
+
+<script>
+async function loadDashboard(){
+  try{
+    const res = await fetch("/api/transport/dashboard");
+    const d = await res.json();
+    document.getElementById("totalBuses").innerText = d.total_buses;
+    document.getElementById("activeBuses").innerText = d.active_buses;
+    document.getElementById("totalRoutes").innerText = d.total_routes;
+    document.getElementById("totalDrivers").innerText = d.total_drivers;
+    document.getElementById("underMaintenance").innerText = d.under_maintenance;
+
+    let alerts = "";
+    if(d.expiring_insurance > 0){
+      alerts += `<span class="alert-badge danger">⚠️ ${d.expiring_insurance} Insurance expiring in 30 days</span>`;
+    }
+    if(alerts){
+      document.getElementById("alertStrip").style.display="block";
+      document.getElementById("alertContent").innerHTML = alerts;
+    }
+  }catch(e){
+    console.log("API not connected yet");
+  }
+}
+window.onload = loadDashboard;
+</script>
+</body>
+</html>

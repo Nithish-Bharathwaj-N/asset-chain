@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Drivers</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Poppins',sans-serif;background:#f4f6f9;margin:0}
+.sidebar{height:100vh;background:linear-gradient(180deg,#1e293b,#0f172a);color:white;padding:25px;position:sticky;top:0}
+.sidebar h3{color:#f59e0b;font-weight:600;margin-bottom:25px}
+.menu-item{padding:10px 12px;margin-bottom:6px;border-radius:8px;cursor:pointer;font-size:13px}
+.menu-item:hover,.menu-item.active{background:#334155}
+.menu-item a{color:white;text-decoration:none;display:block}
+.main{padding:35px}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.page-header h2{font-weight:600;color:#1e293b;margin:0}
+.form-card{background:white;border-radius:18px;padding:32px 36px;box-shadow:0 8px 28px rgba(0,0,0,0.09);margin-bottom:28px;border-top:4px solid #10b981}
+.form-card h5{font-weight:600;color:#1e293b;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid #f1f5f9}
+.form-label{font-size:13px;font-weight:500;color:#475569}
+.form-control,.form-select{border:1px solid #e2e8f0;border-radius:8px;font-size:13px}
+.form-control:focus,.form-select:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,0.1)}
+.table-card{background:white;border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+.table-header{padding:16px 20px;background:#1e293b;color:white}
+.table-header h5{margin:0;font-size:15px}
+.table thead th{background:#f8fafc;color:#475569;font-size:12px;text-transform:uppercase;padding:11px 14px;border:none}
+.table tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;border-color:#f1f5f9}
+.table tbody tr:hover{background:#f0fdf4}
+.badge-active{background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-warn{background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-danger{background:#fee2e2;color:#991b1b;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.btn-green{background:linear-gradient(135deg,#10b981,#059669);border:none;color:white;padding:8px 18px;border-radius:8px;font-size:13px}
+.btn-green:hover{opacity:0.9;color:white}
+.back-btn{background:#64748b;border:none;color:white;padding:8px 16px;border-radius:8px;font-size:13px}
+.btn-del{border:1px solid #ef4444;color:#ef4444;background:transparent;padding:4px 10px;border-radius:6px;font-size:12px}
+.btn-del:hover{background:#ef4444;color:white}
+
+.toast-box{position:fixed;bottom:28px;right:28px;z-index:9999;background:#1e293b;color:white;padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2);display:none;align-items:center;gap:10px;border-left:4px solid #22c55e}
+.toast-box.error{border-left-color:#ef4444}
+.toast-box.show{display:flex;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.empty-state{padding:50px 20px;text-align:center;color:#94a3b8}
+.empty-state .icon{font-size:40px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-2 sidebar">
+  <h3>🚌 Transport</h3>
+  <div class="menu-item"><a href="transport_inventory.html">📊 Dashboard</a></div>
+  <div class="menu-item"><a href="transport_buses.html">🚌 Buses</a></div>
+  <div class="menu-item"><a href="transport_routes.html">🗺️ Routes</a></div>
+  <div class="menu-item"><a href="transport_stops.html">🛑 Bus Stops</a></div>
+  <div class="menu-item active"><a href="transport_drivers.html">👨‍✈️ Drivers</a></div>
+  <div class="menu-item"><a href="transport_insurance.html">🛡️ Insurance</a></div>
+  <div class="menu-item"><a href="transport_rc.html">📋 RC Book</a></div>
+  <div class="menu-item"><a href="transport_maintenance.html">🔧 Maintenance</a></div>
+  <div class="menu-item" style="margin-top:12px;"><a href="head_dashboard.html" style="color:#94a3b8;font-size:12.5px;">← Main Dashboard</a></div>
+</div>
+<div class="col-md-10 main">
+  <div class="page-header">
+    <h2>👨‍✈️ Drivers</h2>
+    <button class="back-btn" onclick="window.location.href='transport_inventory.html'">← Back</button>
+  </div>
+  <div class="form-card">
+    <h5>➕ Add Driver</h5>
+    <div class="row g-3">
+      <div class="col-md-3"><label class="form-label">Full Name *</label><input type="text" id="drv_name" class="form-control" placeholder="e.g. Rajesh Kumar"></div>
+      <div class="col-md-2"><label class="form-label">Employee ID</label><input type="text" id="drv_emp_id" class="form-control" placeholder="EMP-001"></div>
+      <div class="col-md-2"><label class="form-label">Phone</label><input type="text" id="drv_phone" class="form-control" placeholder="9876543210"></div>
+      <div class="col-md-3"><label class="form-label">Email</label><input type="email" id="drv_email" class="form-control"></div>
+      <div class="col-md-2"><label class="form-label">License Number</label><input type="text" id="drv_license" class="form-control" placeholder="TN0120240001234"></div>
+      <div class="col-md-2"><label class="form-label">License Expiry</label><input type="date" id="drv_lic_expiry" class="form-control"></div>
+      <div class="col-md-2"><label class="form-label">Date of Joining</label><input type="date" id="drv_joined" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">Address</label><input type="text" id="drv_address" class="form-control"></div>
+    </div>
+    <div class="mt-3">
+      <button class="btn-green" onclick="addDriver()">Add Driver</button>
+      
+    </div>
+  </div>
+  <div class="table-card">
+    <div class="table-header" style="display:flex;justify-content:space-between;align-items:center;"><h5>All Drivers</h5><span id="drvCount" style="background:rgba(255,255,255,0.15);padding:4px 14px;border-radius:20px;font-size:12px;">—</span></div>
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead><tr><th>#</th><th>Name</th><th>Emp ID</th><th>Phone</th><th>License</th><th>License Expiry</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="driversTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<script>
+function showToast(msg,isError=false){
+  const t=document.getElementById('toast');
+  document.getElementById('toast_msg').innerText=msg;
+  document.getElementById('toast_icon').innerText=isError?'❌':'✅';
+  t.className='toast-box show'+(isError?' error':'');
+  setTimeout(()=>t.className='toast-box',3500);
+}
+function licBadge(dateStr){
+  if(!dateStr) return "—";
+  const exp=new Date(dateStr); const today=new Date();
+  const diff=(exp-today)/(1000*60*60*24);
+  const fmt=exp.toLocaleDateString("en-IN");
+  if(diff<0) return `<span class="badge-danger">${fmt} Expired</span>`;
+  if(diff<60) return `<span class="badge-warn">${fmt} Expiring soon</span>`;
+  return `<span class="badge-active">${fmt}</span>`;
+}
+async function loadDrivers(){
+  try{
+    const res=await fetch("/api/transport/drivers");
+    const data=await res.json();
+    const tbody=document.getElementById("driversTable");
+    document.getElementById('drvCount').innerText=data.length+' driver'+(data.length!==1?'s':'');
+    if(!data.length){ tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="icon">👨‍✈️</div><p>No drivers added yet.<br>Use the form above to register a driver.</p></div></td></tr>`; return; }
+    tbody.innerHTML=data.map((d,i)=>`
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${d.name}</strong></td>
+        <td>${d.employee_id||"—"}</td>
+        <td>${d.phone||"—"}</td>
+        <td style="font-family:monospace;font-size:12px;">${d.license_number||"—"}</td>
+        <td>${licBadge(d.license_expiry)}</td>
+        <td>${d.joined_date||"—"}</td>
+        <td><span class="badge-active">${d.status}</span></td>
+        <td><button class="btn-del" onclick="deleteDriver(${d.id})">Delete</button></td>
+      </tr>
+    `).join("");
+  }catch(e){ document.getElementById("driversTable").innerHTML=`<tr><td colspan="9" class="text-danger text-center">Error loading</td></tr>`; }
+}
+async function addDriver(){
+  const body={
+    name:document.getElementById("drv_name").value.trim(),
+    employee_id:document.getElementById("drv_emp_id").value.trim(),
+    phone:document.getElementById("drv_phone").value.trim(),
+    email:document.getElementById("drv_email").value.trim(),
+    license_number:document.getElementById("drv_license").value.trim(),
+    license_expiry:document.getElementById("drv_lic_expiry").value,
+    joined_date:document.getElementById("drv_joined").value,
+    address:document.getElementById("drv_address").value.trim(),
+  };
+  if(!body.name){alert("Name required");return;}
+  try{
+    const res=await fetch("/api/transport/drivers",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const data=await res.json();
+    showToast(data.message||'Driver added successfully!');
+    loadDrivers();
+  }catch(e){alert("Error");}
+}
+async function deleteDriver(id){
+  if(!confirm("Delete this driver?"))return;
+  await fetch(`/api/transport/drivers/${id}`,{method:'DELETE'});
+  showToast('Driver deleted.');
+  loadDrivers();
+}
+window.onload=loadDrivers;
+</script>
+
+<div class="toast-box" id="toast">
+  <span id="toast_icon">✅</span>
+  <span id="toast_msg"></span>
+</div>
+</body>
+</html>
